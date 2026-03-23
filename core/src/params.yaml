@@ -1,0 +1,66 @@
+clean:
+  input: "data/raw/data.csv"
+  output: "data/clean/data.parquet"
+  columns:
+    keep:
+      - "productid"
+      - "designation"
+      - "description"
+      - "prdtypecode"
+    clean:
+      - "designation"
+      - "description"
+
+features:
+  input: "data/clean/data.parquet"
+  output: "data/features/metadata.json"
+  split:
+    target: "prdtypecode"
+    n_use: -1
+    train_size: 0.8
+    random_state: 42
+  product_id: "productid"
+  embedding:
+    columns:
+      - "designation"
+      - "description"
+    chunk_size: 150
+    overlap: 30
+  statistic:
+    columns:
+      - "designation"
+      - "description"
+  scale:
+    artifact: "models/artifacts/scaler.joblib"
+  pca:
+    n_components: 120
+    artifact: "models/artifacts/pca.joblib"
+
+train:
+  input:
+    x_train: "data/features/X_train.parquet"
+    x_test: "data/features/X_test.parquet"
+    y_train: "data/features/y_train.parquet"
+    y_test: "data/features/y_test.parquet"
+  output:
+    model: "models/artifacts/model.keras"
+    architecture: "models/artifacts/architecture.png"
+    history: "models/artifacts/history.json"
+    labels_map: "models/artifacts/labels_map.json"
+    class_weights: "models/artifacts/class_weights.json"
+    metrics: "models/artifacts/metrics.json"
+    confusion_matrix: "models/artifacts/confusion_matrix.png"
+  target: "prdtypecode"
+  n_classes: 27
+  random_state: 42
+
+evaluate:
+  input:
+    x_test: "data/features/X_test.parquet"
+    y_test: "data/features/y_test.parquet"
+    labels_map: "models/artifacts/labels_map.json"
+  output:
+    metrics: "models/artifacts/metrics.json"
+    confusion_matrix: "models/artifacts/confusion_matrix.png"
+  target: "prdtypecode"
+  model: "models/artifacts/model.keras"
