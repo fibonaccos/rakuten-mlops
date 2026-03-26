@@ -14,7 +14,7 @@ It is recommended to have `make` installed to simplify the setup of the environm
 Run the following command to create a new branch and install dependencies from the `dev` branch.
 
 ```bash
-make setup BRANCH=<BRANCH>
+make setup BRANCH=<BRANCH> 
 ```
 
 It will create a branch based on `dev` and install its dependencies.
@@ -56,15 +56,15 @@ git checkout -b <BRANCH> origin/dev
 After your branch is correctly set up, it is needed to install the dependencies.
 
 ```bash
-uv sync
+uv sync --group <GROUP>
 ```
 
 If you install new dependencies, make sure that they are included in the dedicated files, i.e. `pyproject.toml`, `uv.lock` and `requirements.txt`. The following commands should be launched inside your virtual environment.
 
 ```bash
-uv add [--group <GROUP>] <PACKAGE>
+uv add --group <GROUP> <PACKAGE>
 uv lock
-uv export -qq [--group <GROUP>] --no-hashes -o [PARENT_FOLDER]/requirements.txt
+uv export -qq --group <GROUP> --no-hashes -o [PARENT_FOLDER]/requirements.txt
 ```
 
 Make sure that when the --group option is given it matches the name of a service (see `/services`) and the `requirements.txt` file is generated in the right place, for example :

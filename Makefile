@@ -59,7 +59,7 @@ setup: check-branch
 	@printf "$(MAGENTA)[make] $(BLUE)Creating branch $(BRANCH) based on 'dev'$(RESET)\n"
 	@git checkout -b $(BRANCH) origin/dev
 	@printf "$(MAGENTA)[make] $(BLUE)Installing dependencies$(RESET)\n"
-	@uv sync
+	@uv sync --all-group 
 	@printf "$(MAGENTA)[make] (GREEN)$(BOLD)Setup completed ! You can start working on your branch.$(RESET)\n"
 
 add: check-package
