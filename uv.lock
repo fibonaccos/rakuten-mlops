@@ -1003,7 +1003,9 @@ wheels = [
 name = "rakuten"
 version = "0.1.0"
 source = { virtual = "." }
-dependencies = [
+
+[package.dev-dependencies]
+core = [
     { name = "keras" },
     { name = "lxml" },
     { name = "matplotlib" },
@@ -1017,7 +1019,9 @@ dependencies = [
 ]
 
 [package.metadata]
-requires-dist = [
+
+[package.metadata.requires-dev]
+core = [
     { name = "keras", specifier = ">=3.13.2" },
     { name = "lxml", specifier = ">=6.0.2" },
     { name = "matplotlib", specifier = ">=3.10.8" },

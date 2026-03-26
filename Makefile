@@ -60,12 +60,12 @@ setup: check-branch
 	@git checkout -b $(BRANCH) origin/dev
 	@printf "$(MAGENTA)[make] $(BLUE)Installing dependencies$(RESET)\n"
 	@uv sync
-	@printf "$$(MAGENTA)[make] (GREEN)$(BOLD)Setup completed ! You can start working on your branch.$(RESET)\n"
+	@printf "$(MAGENTA)[make] (GREEN)$(BOLD)Setup completed ! You can start working on your branch.$(RESET)\n"
 
 add: check-package
 ifeq ($(GROUP),)
 	@printf "$(MAGENTA)[make] $(BLUE)Adding package $(PACKAGE)$(RESET)\n"
-	@uv add $(PACKAGE)
+	@uv add --group core $(PACKAGE)
 else
 	@printf "$(MAGENTA)[make] $(BLUE)Adding package $(PACKAGE) to group $(GROUP)$(RESET)\n"
 	@uv add --group $(GROUP) $(PACKAGE)
@@ -74,7 +74,7 @@ endif
 	@uv lock
 	@printf "$(MAGENTA)[make] $(BLUE)Exporting to requirements$(RESET)\n"
 ifeq ($(GROUP),)
-	@uv export -qq --no-hashes -o core/requirements.txt
+	@uv export -qq --group core --no-hashes -o core/requirements.txt
 else
 	@uv export -qq --group $(GROUP) --no-hashes -o services/$(GROUP)/requirements.txt
 endif
