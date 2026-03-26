@@ -43,13 +43,13 @@ train:
     y_train: "data/features/y_train.parquet"
     y_test: "data/features/y_test.parquet"
   output:
-    model: "models/artifacts/model.keras"
-    architecture: "models/artifacts/architecture.png"
-    history: "models/artifacts/history.json"
-    labels_map: "models/artifacts/labels_map.json"
-    class_weights: "models/artifacts/class_weights.json"
-    metrics: "models/artifacts/metrics.json"
-    confusion_matrix: "models/artifacts/confusion_matrix.png"
+    model: "artifacts/model.keras"
+    architecture: "artifacts/architecture.png"
+    history: "artifacts/history.json"
+    labels_map: "artifacts/labels_map.json"
+    class_weights: "artifacts/class_weights.json"
+    metrics: "artifacts/metrics.json"
+    confusion_matrix: "artifacts/confusion_matrix.png"
   target: "prdtypecode"
   n_classes: 27
   random_state: 42
@@ -58,9 +58,9 @@ evaluate:
   input:
     x_test: "data/features/X_test.parquet"
     y_test: "data/features/y_test.parquet"
-    labels_map: "models/artifacts/labels_map.json"
+    labels_map: "artifacts/labels_map.json"
   output:
-    metrics: "models/artifacts/metrics.json"
-    confusion_matrix: "models/artifacts/confusion_matrix.png"
+    metrics: "artifacts/metrics.json"
+    confusion_matrix: "artifacts/confusion_matrix.png"
   target: "prdtypecode"
-  model: "models/artifacts/model.keras"
+  model: "artifacts/model.keras"

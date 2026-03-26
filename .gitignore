@@ -52,6 +52,5 @@ core/data/*
 !core/data/.gitignore
 !core/data/raw
 !core/data/clean
-!core/data/features
 **/*.keras
 **/*.joblib
