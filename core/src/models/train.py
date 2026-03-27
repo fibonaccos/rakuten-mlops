@@ -1,16 +1,30 @@
 import json
+import os
+import random
+from collections import Counter
+from pathlib import Path
+
 import keras as ks
 import numpy as np
 import pandas as pd
-
 from box import Box
-from collections import Counter
 from keras.callbacks import ModelCheckpoint
 from keras.metrics import AUC
-from keras.utils import plot_model
-from pathlib import Path
 
-from ..utils.loaders import load_params
+from ..utils.loaders import load_params  # type: ignore[misc]
+
+
+def set_seed(seed: int) -> None:
+    """
+    Fix all random seeds for reproducibility across python, numpy et keras/TF
+
+    Args:
+        seed (int): the seed value to use everywhere
+    """
+    os.environ["PYTHONHASHSEED"] = str(seed)
+    random.seed(seed)
+    np.random.seed(seed)
+    ks.utils.set_random_seed(seed)
 
 
 def create_model(n_features: int, n_classes: int) -> ks.models.Model:
@@ -27,7 +41,7 @@ def create_model(n_features: int, n_classes: int) -> ks.models.Model:
             shape.
     """
 
-    inputs = ks.layers.Input(shape=(n_features, ), name="input")
+    inputs = ks.layers.Input(shape=(n_features,), name="input")
 
     x = ks.layers.Dense(units=256, activation="relu", name="dense1")(inputs)
     x = ks.layers.Dropout(rate=0.4, name="drop1")(x)
@@ -55,10 +69,7 @@ def compute_class_weight(labels: pd.DataFrame) -> dict[str, float]:
     counts = Counter(labels.to_numpy()[:, 0])
     N = labels.shape[0]
     K = labels.nunique().values[0]
-    weights = {
-        str(cls): float(N / (K * count))
-        for cls, count in counts.items()
-    }
+    weights = {str(cls): float(N / (K * count)) for cls, count in counts.items()}
     return weights
 
 
@@ -75,6 +86,9 @@ def train_model() -> None:
 
     CORE_DIR: Path = Path(__file__).parent.parent.parent
     params: Box = Box(load_params(str(CORE_DIR / "params.yaml"))).train
+
+    seed: int = params.get("seed", 42)
+    set_seed(seed)
 
     X_train = pd.read_parquet(CORE_DIR / params.input.x_train)
     X_test = pd.read_parquet(CORE_DIR / params.input.x_test)
@@ -102,22 +116,23 @@ def train_model() -> None:
         monitor="val_auc",
         save_best_only=True,
         mode="max",
-        verbose=0
+        verbose=0,
     )
 
     model.compile(
         optimizer="adam",
         loss="categorical_crossentropy",
-        metrics=[AUC(multi_label=True, name="auc"), "accuracy"]
+        metrics=[AUC(multi_label=True, name="auc"), "accuracy"],
     )
 
     history = model.fit(
-        X, y_onehot,
+        X,
+        y_onehot,
         epochs=20,
         batch_size=128,
         class_weight=class_weights,
         validation_data=(Xt, yt_onehot),
-        callbacks=[checkpoint_cb]
+        callbacks=[checkpoint_cb],
     )
 
     model.save(CORE_DIR / params.output.model)
