@@ -8,6 +8,8 @@ dependencies = []
 [dependency-groups]
 api = [
     "fastapi>=0.135.2",
+    "pydantic-settings>=2.13.1",
+    "uvicorn>=0.42.0",
 ]
 core = [
     "keras>=3.13.2",
