@@ -54,3 +54,10 @@ core/data/*
 !core/data/clean
 **/*.keras
 **/*.joblib
+
+# AI coding assistants (local tooling — not committed)
+.copilot/
+.copilot-config/
+.claude/
+CLAUDE.md
+.claudeignore

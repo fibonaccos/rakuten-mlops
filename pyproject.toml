@@ -5,11 +5,25 @@ version = "0.1.0"
 requires-python = "==3.12.12"
 dependencies = []
 
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
 [dependency-groups]
 api = [
     "fastapi>=0.135.2",
+    "joblib>=1.4.2",
+    "numpy>=2.2.0",
     "pydantic-settings>=2.13.1",
+    "scikit-learn>=1.6.0",
+    "sentence-transformers>=3.0.0",
     "uvicorn>=0.42.0",
+]
+test = [
+    "httpx>=0.28.0",
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.25.0",
 ]
 core = [
     "keras>=3.13.2",
