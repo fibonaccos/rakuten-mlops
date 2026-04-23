@@ -1,29 +1,36 @@
 from datetime import datetime, timedelta, timezone
 
+import bcrypt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 
 from services.api.config import settings
 from services.api.schemas.auth import TokenPayload, User, UserInDB
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+
+
+def hash_password(password: str) -> str:
+    """Hash a plain password with bcrypt."""
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Check a plain password against its bcrypt hash."""
+    return bcrypt.checkpw(
+        plain_password.encode("utf-8"), hashed_password.encode("utf-8")
+    )
+
 
 # Temporary in-memory user store. Replace with a DB query later.
 _FAKE_USERS_DB: dict[str, UserInDB] = {
     "admin": UserInDB(
         username="admin",
-        hashed_password=pwd_context.hash("changeme"),
+        hashed_password=hash_password("changeme"),
         disabled=False,
     ),
 }
-
-
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Check a plain password against its bcrypt hash."""
-    return pwd_context.verify(plain_password, hashed_password)
 
 
 def get_user(username: str) -> UserInDB | None:

@@ -11,7 +11,7 @@ api = [
     "pydantic-settings>=2.13.1",
     "uvicorn>=0.42.0",
     "python-jose[cryptography]>=3.3.0",
-    "passlib[bcrypt]>=1.7.4",
+    "bcrypt>=4.1.0",
     "python-multipart>=0.0.9",
 ]
 core = [
