@@ -6,9 +6,14 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(env_file=".env", env_prefix="API_")
 
-    jwt_secret: str = "dev-secret-change-me" #openssl rand -hex 32
+    # JWT settings
+    jwt_secret: str
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 60
+
+    # Default admin user (bootstrapped at startup)
+    admin_username: str = "admin"
+    admin_password_hash: str
 
 
 settings = Settings()
