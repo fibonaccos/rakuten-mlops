@@ -25,9 +25,9 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 # Temporary in-memory user store. Replace with a DB query later.
 _FAKE_USERS_DB: dict[str, UserInDB] = {
-    "admin": UserInDB(
-        username="admin",
-        hashed_password=hash_password("changeme"),
+    settings.admin_username: UserInDB(
+        username=settings.admin_username,
+        hashed_password=settings.admin_password_hash,
         disabled=False,
     ),
 }
