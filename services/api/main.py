@@ -1,6 +1,10 @@
 from fastapi import FastAPI
 
+from services.api.routes import auth
+
 app = FastAPI(title="Rakuten Inference API")
+
+app.include_router(auth.router)
 
 
 @app.get("/health")
