@@ -54,3 +54,6 @@ core/data/*
 !core/data/clean
 **/*.keras
 **/*.joblib
+
+# macOS
+.DS_Store
