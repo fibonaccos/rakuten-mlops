@@ -54,3 +54,4 @@ core/data/*
 !core/data/clean
 **/*.keras
 **/*.joblib
+services/airflow/logs/*
