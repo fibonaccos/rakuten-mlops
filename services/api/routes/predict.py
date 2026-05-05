@@ -15,6 +15,7 @@ import time
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 
 from services.api.config import get_settings
+from services.api.schemas.auth import User
 from services.api.schemas.inference import (
     BatchPredictionInput,
     BatchPredictionOutput,
@@ -22,6 +23,7 @@ from services.api.schemas.inference import (
     SinglePredictionInput,
     SinglePredictionOutput,
 )
+from services.api.services.auth import get_current_user
 from services.api.services.predictor import PredictorService
 
 logger = logging.getLogger(__name__)
@@ -58,6 +60,7 @@ def get_predictor(request: Request) -> PredictorService:
 async def predict_single(
     body: SinglePredictionInput,
     predictor: PredictorService = Depends(get_predictor),
+    current_user: User = Depends(get_current_user),
 ) -> SinglePredictionOutput:
     """
     Classify a single Rakuten product.
@@ -108,6 +111,7 @@ async def predict_single(
 async def predict_batch(
     body: BatchPredictionInput,
     predictor: PredictorService = Depends(get_predictor),
+    current_user: User = Depends(get_current_user),
 ) -> BatchPredictionOutput:
     """
     Classify a batch of Rakuten products.

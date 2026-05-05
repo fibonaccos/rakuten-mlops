@@ -12,10 +12,12 @@ from fastapi.testclient import TestClient
 
 from services.api.main import app
 from services.api.routes.predict import get_predictor
+from services.api.schemas.auth import User
 from services.api.schemas.inference import (
     BasePredictionOutput,
     PredictionInputOptions,
 )
+from services.api.services.auth import get_current_user
 
 
 # ── Fixtures ──────────────────────────────────────────────────────────────────
@@ -41,16 +43,20 @@ def _make_predictor_mock(
     return mock
 
 
+_FAKE_USER = User(username="testuser", disabled=False)
+
+
 @pytest.fixture(autouse=True)
-def override_predictor():
+def override_dependencies():
     """
-    Override the get_predictor dependency for every test in this module.
+    Override get_predictor and get_current_user for every test in this module.
 
     autouse=True means this fixture is applied automatically to all tests
     without needing to declare it explicitly.
     """
     mock = _make_predictor_mock()
     app.dependency_overrides[get_predictor] = lambda: mock
+    app.dependency_overrides[get_current_user] = lambda: _FAKE_USER
     yield mock
     app.dependency_overrides.clear()
 
@@ -113,9 +119,9 @@ class TestPredictSingle:
         assert response.json()["results"]["confidence"] is None
 
     def test_confidence_present_when_requested(
-        self, client: TestClient, override_predictor: MagicMock
+        self, client: TestClient, override_dependencies: MagicMock
     ) -> None:
-        override_predictor.predict.return_value = BasePredictionOutput(
+        override_dependencies.predict.return_value = BasePredictionOutput(
             label="40", confidence=0.87
         )
         payload = {
@@ -126,9 +132,9 @@ class TestPredictSingle:
         assert response.json()["results"]["confidence"] == pytest.approx(0.87)
 
     def test_distribution_present_when_requested(
-        self, client: TestClient, override_predictor: MagicMock
+        self, client: TestClient, override_dependencies: MagicMock
     ) -> None:
-        override_predictor.predict.return_value = BasePredictionOutput(
+        override_dependencies.predict.return_value = BasePredictionOutput(
             label="40",
             distribution={"10": 0.2, "40": 0.8},
         )
@@ -155,9 +161,9 @@ class TestPredictSingle:
         assert response.status_code == 200
 
     def test_service_error_returns_500(
-        self, client: TestClient, override_predictor: MagicMock, valid_single_payload: dict
+        self, client: TestClient, override_dependencies: MagicMock, valid_single_payload: dict
     ) -> None:
-        override_predictor.predict.side_effect = RuntimeError("Model failure")
+        override_dependencies.predict.side_effect = RuntimeError("Model failure")
         response = client.post("/predict", json=valid_single_payload)
         assert response.status_code == 500
 
@@ -171,9 +177,9 @@ class TestPredictBatch:
         assert response.status_code == 200
 
     def test_response_is_list(
-        self, client: TestClient, override_predictor: MagicMock, valid_batch_payload: dict
+        self, client: TestClient, override_dependencies: MagicMock, valid_batch_payload: dict
     ) -> None:
-        override_predictor.predict_batch.return_value = [
+        override_dependencies.predict_batch.return_value = [
             BasePredictionOutput(label="40"),
             BasePredictionOutput(label="10"),
         ]

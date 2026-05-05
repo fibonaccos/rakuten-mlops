@@ -199,6 +199,7 @@ class BaseTrainingService(ABC):
             logger.info("Training job %s started", job.job_id)
             job.metrics = await self._run_training(job)
             job.status = JobStatus.COMPLETED
+            job.completed_at = datetime.now(timezone.utc)
             logger.info("Training job %s completed in %.1fs", job.job_id, job.duration_s)
         except asyncio.CancelledError:
             job.status = JobStatus.CANCELLED
@@ -209,7 +210,8 @@ class BaseTrainingService(ABC):
             job.status = JobStatus.FAILED
             logger.error("Training job %s failed: %s", job.job_id, exc)
         finally:
-            job.completed_at = datetime.now(timezone.utc)
+            if job.completed_at is None:
+                job.completed_at = datetime.now(timezone.utc)
 
     @abstractmethod
     async def _run_training(self, job: TrainingJob) -> dict[str, Any]:

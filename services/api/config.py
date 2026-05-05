@@ -21,13 +21,14 @@ class Settings(BaseSettings):
     app_description: str = "Product category classification for Rakuten catalogue."
 
     # -- JWT settings ----------------------------------------------------------
-    jwt_secret: str = ""
+    jwt_secret: str = "dev-secret-change-in-production"
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 60
 
     # -- Admin user bootstrapped at startup ------------------------------------
+    # Default hash is bcrypt("changeme") — override in production via API_ADMIN_PASSWORD_HASH.
     admin_username: str = "admin"
-    admin_password_hash: str = ""
+    admin_password_hash: str = "$2b$12$.SFcvNZnowY3gVm76LEhD.g9exvyLWMBhiHJAIyvcBWMnjhIL51Qy"
 
     # -- ML artifact paths -----------------------------------------------------
     model_path: str = "core/artifacts/model.keras"
@@ -63,3 +64,7 @@ def get_settings() -> Settings:
         Settings: The validated application settings.
     """
     return Settings()
+
+
+# Module-level instance for direct imports (e.g. in services/auth.py).
+settings = get_settings()
