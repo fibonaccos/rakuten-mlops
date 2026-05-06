@@ -15,7 +15,6 @@ Warning:
 """
 
 import random
-import time
 from typing import Final
 
 from services.api.schemas.inference import (
@@ -138,6 +137,6 @@ def _softmax_noise(rng: random.Random, n: int) -> list[float]:
         list[float]: Probabilities that sum to 1.0.
     """
     logits = [rng.gauss(0, 1) for _ in range(n)]
-    exp_logits = [2.718 ** l for l in logits]
+    exp_logits = [2.718 ** x for x in logits]
     total = sum(exp_logits)
     return [e / total for e in exp_logits]

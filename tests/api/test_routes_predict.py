@@ -15,7 +15,6 @@ from services.api.routes.predict import get_predictor
 from services.api.schemas.auth import User
 from services.api.schemas.inference import (
     BasePredictionOutput,
-    PredictionInputOptions,
 )
 from services.api.services.auth import get_current_user
 

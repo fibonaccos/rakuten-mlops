@@ -7,14 +7,13 @@ tests run without any real training infrastructure or asyncio task overhead.
 """
 
 import pytest
-from datetime import datetime, timezone
 from unittest.mock import AsyncMock, MagicMock
 
 from fastapi.testclient import TestClient
 
 from services.api.main import app
 from services.api.routes.train import get_trainer
-from services.api.schemas.training import JobStatus, TrainJobStatus
+from services.api.schemas.training import JobStatus
 from services.api.services.training import TrainingConflictError, TrainingJob
 
 
