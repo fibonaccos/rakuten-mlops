@@ -4,12 +4,16 @@ absl-py==2.4.0
     # via
     #   keras
     #   tensorflow
+alembic==1.18.4
+    # via mlflow
 annotated-doc==0.0.4
     # via typer
 anyio==4.13.0
     # via httpx
 astunparse==1.6.3
     # via tensorflow
+blinker==1.9.0
+    # via flask
 certifi==2026.2.25
     # via
     #   httpcore
@@ -20,7 +24,13 @@ cfgv==3.5.0
 charset-normalizer==3.4.6
     # via requests
 click==8.3.1
-    # via typer
+    # via
+    #   databricks-cli
+    #   flask
+    #   mlflow
+    #   typer
+cloudpickle==3.1.2
+    # via mlflow
 colorama==0.4.6 ; sys_platform == 'win32'
     # via
     #   click
@@ -35,14 +45,24 @@ cuda-toolkit==13.0.2 ; sys_platform == 'linux'
     # via torch
 cycler==0.12.1
     # via matplotlib
+databricks-cli==0.18.0
+    # via mlflow
 distlib==0.4.0
     # via virtualenv
+docker==7.1.0
+    # via mlflow
+entrypoints==0.4
+    # via mlflow
 filelock==3.25.2
     # via
     #   huggingface-hub
     #   python-discovery
     #   torch
     #   virtualenv
+flask==3.1.3
+    # via
+    #   mlflow
+    #   prometheus-flask-exporter
 flatbuffers==25.12.19
     # via tensorflow
 fonttools==4.62.1
@@ -53,10 +73,18 @@ fsspec==2026.2.0
     #   torch
 gast==0.7.0
     # via tensorflow
+gitdb==4.0.12
+    # via gitpython
+gitpython==3.1.46
+    # via mlflow
 google-pasta==0.2.0
     # via tensorflow
+greenlet==3.3.2 ; platform_machine == 'AMD64' or platform_machine == 'WIN32' or platform_machine == 'aarch64' or platform_machine == 'amd64' or platform_machine == 'ppc64le' or platform_machine == 'win32' or platform_machine == 'x86_64'
+    # via sqlalchemy
 grpcio==1.78.0
     # via tensorflow
+gunicorn==25.3.0 ; sys_platform != 'win32'
+    # via mlflow
 h11==0.16.0
     # via httpcore
 h5py==3.14.0
@@ -81,8 +109,14 @@ idna==3.11
     #   anyio
     #   httpx
     #   requests
+importlib-metadata==9.0.0
+    # via mlflow
+itsdangerous==2.2.0
+    # via flask
 jinja2==3.1.6
-    # via torch
+    # via
+    #   flask
+    #   torch
 joblib==1.5.3
     # via scikit-learn
 keras==3.13.2
@@ -92,10 +126,16 @@ kiwisolver==1.5.0
 libclang==18.1.1
     # via tensorflow
 lxml==6.0.2
+mako==1.3.10
+    # via alembic
 markdown-it-py==4.0.0
     # via rich
 markupsafe==3.0.3
-    # via jinja2
+    # via
+    #   flask
+    #   jinja2
+    #   mako
+    #   werkzeug
 matplotlib==3.10.8
     # via seaborn
 mdurl==0.1.2
@@ -104,6 +144,7 @@ ml-dtypes==0.5.4
     # via
     #   keras
     #   tensorflow
+mlflow==1.27.0
 mpmath==1.3.0
     # via sympy
 namex==0.1.0
@@ -119,6 +160,7 @@ numpy==2.4.3
     #   keras
     #   matplotlib
     #   ml-dtypes
+    #   mlflow
     #   pandas
     #   scikit-learn
     #   scipy
@@ -165,20 +207,26 @@ nvidia-nvshmem-cu13==3.4.5 ; sys_platform == 'linux'
     # via torch
 nvidia-nvtx==13.0.85 ; sys_platform == 'linux'
     # via cuda-toolkit
+oauthlib==3.3.1
+    # via databricks-cli
 opt-einsum==3.4.0
     # via tensorflow
 optree==0.19.0
     # via keras
 packaging==26.0
     # via
+    #   gunicorn
     #   huggingface-hub
     #   keras
     #   matplotlib
+    #   mlflow
     #   tensorflow
     #   transformers
     #   wheel
 pandas==3.0.1
-    # via seaborn
+    # via
+    #   mlflow
+    #   seaborn
 pillow==12.1.1
     # via matplotlib
 platformdirs==4.9.4
@@ -186,11 +234,19 @@ platformdirs==4.9.4
     #   python-discovery
     #   virtualenv
 pre-commit==4.5.1
+prometheus-client==0.24.1
+    # via prometheus-flask-exporter
+prometheus-flask-exporter==0.23.2
+    # via mlflow
 protobuf==7.34.1
-    # via tensorflow
+    # via
+    #   mlflow
+    #   tensorflow
 pyarrow==23.0.1
 pygments==2.19.2
     # via rich
+pyjwt==2.12.1
+    # via databricks-cli
 pyparsing==3.3.2
     # via matplotlib
 python-box==7.4.1
@@ -200,15 +256,26 @@ python-dateutil==2.9.0.post0
     #   pandas
 python-discovery==1.2.0
     # via virtualenv
+pytz==2026.1.post1
+    # via mlflow
+pywin32==311 ; sys_platform == 'win32'
+    # via docker
 pyyaml==6.0.3
     # via
     #   huggingface-hub
+    #   mlflow
     #   pre-commit
     #   transformers
+querystring-parser==1.2.4
+    # via mlflow
 regex==2026.2.28
     # via transformers
 requests==2.32.5
-    # via tensorflow
+    # via
+    #   databricks-cli
+    #   docker
+    #   mlflow
+    #   tensorflow
 rich==14.3.3
     # via
     #   keras
@@ -219,6 +286,7 @@ scikit-learn==1.8.0
     # via sentence-transformers
 scipy==1.17.1
     # via
+    #   mlflow
     #   scikit-learn
     #   sentence-transformers
 seaborn==0.13.2
@@ -232,11 +300,23 @@ shellingham==1.5.4
 six==1.17.0
     # via
     #   astunparse
+    #   databricks-cli
     #   google-pasta
     #   python-dateutil
+    #   querystring-parser
     #   tensorflow
+smmap==5.0.3
+    # via gitdb
+sqlalchemy==2.0.49
+    # via
+    #   alembic
+    #   mlflow
+sqlparse==0.5.5
+    # via mlflow
 sympy==1.14.0
     # via torch
+tabulate==0.10.0
+    # via databricks-cli
 tensorflow==2.21.0
 termcolor==3.3.0
     # via tensorflow
@@ -261,20 +341,31 @@ typer==0.24.1
     #   transformers
 typing-extensions==4.15.0
     # via
+    #   alembic
     #   anyio
     #   grpcio
     #   huggingface-hub
     #   optree
     #   sentence-transformers
+    #   sqlalchemy
     #   tensorflow
     #   torch
 tzdata==2025.3 ; sys_platform == 'emscripten' or sys_platform == 'win32'
     # via pandas
 urllib3==2.6.3
-    # via requests
+    # via
+    #   databricks-cli
+    #   docker
+    #   requests
 virtualenv==21.2.0
     # via pre-commit
+waitress==3.0.2 ; sys_platform == 'win32'
+    # via mlflow
+werkzeug==3.1.8
+    # via flask
 wheel==0.46.3
     # via astunparse
 wrapt==2.1.2
     # via tensorflow
+zipp==3.23.0
+    # via importlib-metadata

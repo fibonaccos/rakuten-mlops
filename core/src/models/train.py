@@ -10,6 +10,8 @@ import pandas as pd
 from box import Box
 from keras.callbacks import ModelCheckpoint
 from keras.metrics import AUC
+import mlflow
+import mlflow.keras
 
 from ..utils.loaders import load_params  # type: ignore[misc]
 
@@ -85,10 +87,14 @@ def train_model() -> None:
     """
 
     CORE_DIR: Path = Path(__file__).parent.parent.parent
+    PROJECT_DIR = CORE_DIR.parent
     params: Box = Box(load_params(str(CORE_DIR / "params.yaml"))).train
 
     seed: int = params.get("seed", 42)
     set_seed(seed)
+
+    mlflow.set_tracking_uri(PROJECT_DIR / "tracking/mlflow/mlruns")
+    mlflow.set_experiment("training")
 
     X_train = pd.read_parquet(CORE_DIR / params.input.x_train)
     X_test = pd.read_parquet(CORE_DIR / params.input.x_test)
@@ -125,38 +131,60 @@ def train_model() -> None:
         metrics=[AUC(multi_label=True, name="auc"), "accuracy"],
     )
 
-    history = model.fit(
-        X,
-        y_onehot,
-        epochs=20,
-        batch_size=128,
-        class_weight=class_weights,
-        validation_data=(Xt, yt_onehot),
-        callbacks=[checkpoint_cb],
-    )
+    with mlflow.start_run():
+        mlflow.log_param("seed", seed)
+        mlflow.log_param("n_classes", params.n_classes)
+        #à remplir avec ce que l'on juge utile        
 
-    model.save(CORE_DIR / params.output.model)
-    """ This function creates an image with the model graph, but requires graphviz
-        to be installed (out of the project dependencies). Uncomment it if you have
-        graphviz installed.
+        history = model.fit(
+            X,
+            y_onehot,
+            epochs=2,
+            batch_size=128,
+            class_weight=class_weights,
+            validation_data=(Xt, yt_onehot),
+            callbacks=[checkpoint_cb],
+        )
 
-    plot_model(
-        model,
-        to_file=CORE_DIR / params.output.architecture,
-        show_shapes=True,
-        show_layer_names=True
-    )
-    """
+        model.save(CORE_DIR / params.output.model)
+        """ This function creates an image with the model graph, but requires graphviz
+            to be installed (out of the project dependencies). Uncomment it if you have
+            graphviz installed.
 
-    with open(CORE_DIR / params.output.history, "w") as f:
-        json.dump(history.history, f, indent=2)
+        plot_model(
+            model,
+            to_file=CORE_DIR / params.output.architecture,
+            show_shapes=True,
+            show_layer_names=True
+        )
+        """
 
-    with open(CORE_DIR / params.output.labels_map, "w") as f:
-        json.dump(code_to_index, f, indent=2)
+        with open(CORE_DIR / params.output.history, "w") as f:
+            json.dump(history.history, f, indent=2)
 
-    with open(CORE_DIR / params.output.class_weights, "w") as f:
-        json.dump(class_weights, f, indent=2)
+        with open(CORE_DIR / params.output.labels_map, "w") as f:
+            json.dump(code_to_index, f, indent=2)
 
+        with open(CORE_DIR / params.output.class_weights, "w") as f:
+            json.dump(class_weights, f, indent=2)
+
+        mlflow.log_metric("accuracy", history.history["accuracy"][-1])
+        mlflow.log_metric("auc", history.history["auc"][-1])
+        mlflow.log_metric("loss", history.history["loss"][-1])
+        mlflow.log_metric("val_accuracy", history.history["val_accuracy"][-1])
+        mlflow.log_metric("val_auc", history.history["val_auc"][-1])
+        mlflow.log_metric("val_loss", history.history["val_loss"][-1])
+
+        mlflow.log_metric("best_val_auc", max(history.history["val_auc"]))
+        mlflow.log_metric("best_val_accuracy", max(history.history["val_accuracy"]))
+
+        mlflow.keras.log_model(model, artifact_path = "model")
+        mlflow.log_artifact(str(CORE_DIR / params.output.history))
+        mlflow.log_artifact(str(CORE_DIR / params.output.labels_map))
+        mlflow.log_artifact(str(CORE_DIR / params.output.class_weights))
+        mlflow.log_artifact(str(CORE_DIR / params.output.model))
+
+        print("run mlflow enregistrée")
 
 if __name__ == "__main__":
     train_model()
