@@ -23,6 +23,7 @@ import logging
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 
+from services.api.services.auth import get_current_user
 from services.api.schemas.training import (
     TrainJobListResponse,
     TrainJobRequest,
@@ -32,7 +33,11 @@ from services.api.services.training import BaseTrainingService, TrainingConflict
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/train", tags=["Training"])
+router = APIRouter(
+    prefix="/train",
+    tags=["Training"],
+    dependencies=[Depends(get_current_user)],
+)
 
 
 def get_trainer(request: Request) -> BaseTrainingService:
