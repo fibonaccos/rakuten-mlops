@@ -13,7 +13,9 @@ from fastapi.testclient import TestClient
 
 from services.api.main import app
 from services.api.routes.train import get_trainer
+from services.api.schemas.auth import User
 from services.api.schemas.training import JobStatus
+from services.api.services.auth import get_current_user
 from services.api.services.training import TrainingConflictError, TrainingJob
 
 
@@ -47,21 +49,25 @@ def _make_trainer_mock(job: TrainingJob | None = None) -> MagicMock:
     return mock
 
 
+_FAKE_USER = User(username="testuser", disabled=False)
+
+
 # ── Fixtures ───────────────────────────────────────────────────────────────────
 
 
 @pytest.fixture(autouse=True)
 def override_trainer():
     """
-    Replace get_trainer with a mock for every test in this module.
+    Replace route dependencies with mocks for every test in this module.
 
     autouse=True means every test gets a clean override automatically.
     The fixture tears down the override after each test.
     """
     mock = _make_trainer_mock()
     app.dependency_overrides[get_trainer] = lambda: mock
+    app.dependency_overrides[get_current_user] = lambda: _FAKE_USER
     yield mock
-    app.dependency_overrides.pop(get_trainer, None)
+    app.dependency_overrides.clear()
 
 
 @pytest.fixture
@@ -76,6 +82,13 @@ def test_submit_returns_202(client):
     """POST /train must return 202 Accepted."""
     resp = client.post("/train", json={})
     assert resp.status_code == 202
+
+
+def test_submit_without_token_returns_401(client):
+    """POST /train must require authentication."""
+    app.dependency_overrides.pop(get_current_user, None)
+    resp = client.post("/train", json={})
+    assert resp.status_code == 401
 
 
 def test_submit_response_has_job_id(client):

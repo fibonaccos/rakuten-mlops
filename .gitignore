@@ -57,10 +57,3 @@ core/data/*
 
 # macOS
 .DS_Store
-
-# AI coding assistants (local tooling — not committed)
-.copilot/
-.copilot-config/
-.claude/
-CLAUDE.md
-.claudeignore
