@@ -18,7 +18,6 @@ from typing import Any
 
 import joblib
 import numpy as np
-from sentence_transformers import SentenceTransformer
 
 from services.api.config import Settings
 from services.api.schemas.inference import (
@@ -28,6 +27,7 @@ from services.api.schemas.inference import (
 )
 
 logger = logging.getLogger(__name__)
+SentenceTransformer: Any = None
 
 
 class ArtifactLoadError(Exception):
@@ -86,6 +86,12 @@ class PredictorService:
         """
         logger.info("Loading ML artifacts...")
         try:
+            global SentenceTransformer
+            if SentenceTransformer is None:
+                from sentence_transformers import SentenceTransformer as _SentenceTransformer
+
+                SentenceTransformer = _SentenceTransformer
+
             import keras as ks
 
             self._model = ks.models.load_model(self._settings.model_path)
@@ -115,7 +121,7 @@ class PredictorService:
 
             self._loaded = True
             logger.info("All artifacts ready.")
-        except (OSError, ValueError, KeyError) as exc:
+        except (ImportError, OSError, ValueError, KeyError) as exc:
             raise ArtifactLoadError(
                 f"Failed to load ML artifacts: {exc}"
             ) from exc

@@ -22,7 +22,7 @@ PACKAGE	?=
 
 
 # Make targets
-KNOWN_TARGETS := setup add commit push
+KNOWN_TARGETS := setup add commit push docker-build docker-up docker-down docker-logs
 
 # Commands
 
@@ -51,7 +51,7 @@ check-precommit:
 	@printf "$(GREEN)$(BOLD)Pre-commit hooks installed.$(RESET)\n"
 
 
-.PHONY: setup add commit push
+.PHONY: setup add commit push docker-build docker-up docker-down docker-logs
 
 setup: check-branch
 	@printf "$(MAGENTA)[make] $(BLUE)Fetching 'dev' remote branch$(RESET)\n"
@@ -79,6 +79,18 @@ else
 	@uv export -qq --group $(GROUP) --no-hashes -o services/$(GROUP)/requirements.txt
 endif
 	@printf "$(MAGENTA)[make] $(GREEN)$(BOLD)Dependencies successfully added.$(RESET)\n"
+
+docker-build:
+	@docker compose build
+
+docker-up:
+	@docker compose up -d
+
+docker-down:
+	@docker compose down
+
+docker-logs:
+	@docker compose logs -f
 
 commit: check-precommit
 	@printf "$(MAGENTA)[make] $(BLUE)Committing changes$(RESET)\n"
