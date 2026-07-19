@@ -10,6 +10,15 @@ testpaths = ["tests"]
 pythonpath = ["."]
 asyncio_mode = "auto"
 
+[tool.ruff]
+line-length = 99
+# schemas/inference.py is the frozen I/O contract for the API — left untouched
+# by the formatter/linter on purpose.
+extend-exclude = ["services/api/schemas/inference.py"]
+
+[tool.ruff.lint]
+extend-select = ["I"]
+
 [dependency-groups]
 api = [
     "bcrypt>=4.1.0",
