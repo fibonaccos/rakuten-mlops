@@ -1,6 +1,6 @@
-import keras as ks
-
 from typing import Any
+
+import keras as ks
 from yaml import safe_load
 
 

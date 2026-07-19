@@ -6,18 +6,16 @@ query validation, and error handling. The PredictorService is mocked via
 FastAPI dependency override so tests run without any ML artifacts.
 """
 
-import pytest
 from unittest.mock import MagicMock
+
+import pytest
 from fastapi.testclient import TestClient
 
 from services.api.main import app
 from services.api.routes.predict import get_predictor
 from services.api.schemas.auth import User
-from services.api.schemas.inference import (
-    BasePredictionOutput,
-)
+from services.api.schemas.inference import BasePredictionOutput
 from services.api.services.auth import get_current_user
-
 
 # ── Fixtures ──────────────────────────────────────────────────────────────────
 
@@ -93,9 +91,7 @@ class TestPredictSingle:
         response = client.post("/predict", json=valid_single_payload)
         assert response.status_code == 200
 
-    def test_response_contains_label(
-        self, client: TestClient, valid_single_payload: dict
-    ) -> None:
+    def test_response_contains_label(self, client: TestClient, valid_single_payload: dict) -> None:
         response = client.post("/predict", json=valid_single_payload)
         body = response.json()
         assert "results" in body
@@ -160,7 +156,10 @@ class TestPredictSingle:
         assert response.status_code == 200
 
     def test_service_error_returns_500(
-        self, client: TestClient, override_dependencies: MagicMock, valid_single_payload: dict
+        self,
+        client: TestClient,
+        override_dependencies: MagicMock,
+        valid_single_payload: dict,
     ) -> None:
         override_dependencies.predict.side_effect = RuntimeError("Model failure")
         response = client.post("/predict", json=valid_single_payload)
@@ -176,7 +175,10 @@ class TestPredictBatch:
         assert response.status_code == 200
 
     def test_response_is_list(
-        self, client: TestClient, override_dependencies: MagicMock, valid_batch_payload: dict
+        self,
+        client: TestClient,
+        override_dependencies: MagicMock,
+        valid_batch_payload: dict,
     ) -> None:
         override_dependencies.predict_batch.return_value = [
             BasePredictionOutput(label="40"),
@@ -192,8 +194,6 @@ class TestPredictBatch:
         response = client.post("/predict/batch", json={"inputs": []})
         assert response.status_code == 422
 
-    def test_metadata_present(
-        self, client: TestClient, valid_batch_payload: dict
-    ) -> None:
+    def test_metadata_present(self, client: TestClient, valid_batch_payload: dict) -> None:
         response = client.post("/predict/batch", json=valid_batch_payload)
         assert "metadata" in response.json()

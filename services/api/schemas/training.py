@@ -53,9 +53,7 @@ class TrainJobStatus(BaseModel):
         default=None,
         description="Evaluation metrics produced by the run. Populated on COMPLETED.",
     )
-    error: str | None = Field(
-        default=None, description="Error message. Populated on FAILED."
-    )
+    error: str | None = Field(default=None, description="Error message. Populated on FAILED.")
 
 
 class TrainJobListResponse(BaseModel):

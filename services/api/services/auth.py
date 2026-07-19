@@ -18,9 +18,7 @@ def hash_password(password: str) -> str:
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Check a plain password against its bcrypt hash."""
-    return bcrypt.checkpw(
-        plain_password.encode("utf-8"), hashed_password.encode("utf-8")
-    )
+    return bcrypt.checkpw(plain_password.encode("utf-8"), hashed_password.encode("utf-8"))
 
 
 # Temporary in-memory user store. Replace with a DB query later.
@@ -48,9 +46,7 @@ def authenticate_user(username: str, password: str) -> UserInDB | None:
 
 def create_access_token(subject: str) -> str:
     """Create a signed JWT access token for the given subject (username)."""
-    expire = datetime.now(timezone.utc) + timedelta(
-        minutes=settings.access_token_expire_minutes
-    )
+    expire = datetime.now(timezone.utc) + timedelta(minutes=settings.access_token_expire_minutes)
     payload = {"sub": subject, "exp": expire}
     return jwt.encode(payload, settings.jwt_secret, algorithm=settings.jwt_algorithm)
 
@@ -63,9 +59,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        raw_payload = jwt.decode(
-            token, settings.jwt_secret, algorithms=[settings.jwt_algorithm]
-        )
+        raw_payload = jwt.decode(token, settings.jwt_secret, algorithms=[settings.jwt_algorithm])
         payload = TokenPayload(**raw_payload)
     except JWTError:
         raise credentials_exception

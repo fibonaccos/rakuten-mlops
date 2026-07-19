@@ -107,13 +107,9 @@ class PredictorService:
                 raw: dict[str, str] = json.load(f)
             # labels_map.json stores {prdtypecode_str: index_int}; we invert it.
             self._labels_map = {int(v): k for k, v in raw.items()}
-            logger.info(
-                "Labels map loaded: %d classes", len(self._labels_map)
-            )
+            logger.info("Labels map loaded: %d classes", len(self._labels_map))
 
-            self._embedder = SentenceTransformer(
-                self._settings.embedder_model_name
-            )
+            self._embedder = SentenceTransformer(self._settings.embedder_model_name)
             logger.info(
                 "SentenceTransformer loaded: %s",
                 self._settings.embedder_model_name,
@@ -122,9 +118,7 @@ class PredictorService:
             self._loaded = True
             logger.info("All artifacts ready.")
         except (ImportError, OSError, ValueError, KeyError) as exc:
-            raise ArtifactLoadError(
-                f"Failed to load ML artifacts: {exc}"
-            ) from exc
+            raise ArtifactLoadError(f"Failed to load ML artifacts: {exc}") from exc
 
     def predict(
         self,
@@ -163,10 +157,7 @@ class PredictorService:
             if options.return_confidence:
                 confidence = float(raw_probs[predicted_index])
             if options.return_distribution:
-                distribution = {
-                    self._labels_map[i]: float(p)
-                    for i, p in enumerate(raw_probs)
-                }
+                distribution = {self._labels_map[i]: float(p) for i, p in enumerate(raw_probs)}
 
         return BasePredictionOutput(
             label=label,
@@ -198,9 +189,7 @@ class PredictorService:
         if not self._loaded:
             raise RuntimeError("Artifacts not loaded. Call load_artifacts() first.")
 
-        feature_matrix = np.vstack(
-            [self._build_feature_vector(inp) for inp in inputs]
-        )
+        feature_matrix = np.vstack([self._build_feature_vector(inp) for inp in inputs])
         scaled = self._scaler.transform(feature_matrix)
         reduced = self._pca.transform(scaled)
 
@@ -217,10 +206,7 @@ class PredictorService:
                 if options.return_confidence:
                     confidence = float(raw_probs[predicted_index])
                 if options.return_distribution:
-                    distribution = {
-                        self._labels_map[i]: float(p)
-                        for i, p in enumerate(raw_probs)
-                    }
+                    distribution = {self._labels_map[i]: float(p) for i, p in enumerate(raw_probs)}
 
             results.append(
                 BasePredictionOutput(
@@ -280,14 +266,16 @@ class PredictorService:
         for text in (designation, description):
             words = text.split() if text else []
             word_lengths = [len(w) for w in words]
-            features.extend([
-                float(len(text)),
-                float(len(words)),
-                float(np.mean(word_lengths)) if word_lengths else 0.0,
-                float(max(word_lengths)) if word_lengths else 0.0,
-                float(sum(unicodedata.category(c).startswith("N") for c in text)),
-                float(sum(unicodedata.category(c).startswith("P") for c in text)),
-            ])
+            features.extend(
+                [
+                    float(len(text)),
+                    float(len(words)),
+                    float(np.mean(word_lengths)) if word_lengths else 0.0,
+                    float(max(word_lengths)) if word_lengths else 0.0,
+                    float(sum(unicodedata.category(c).startswith("N") for c in text)),
+                    float(sum(unicodedata.category(c).startswith("P") for c in text)),
+                ]
+            )
         return np.array(features, dtype=np.float64)
 
     def _chunk_text(self, text: str) -> list[str]:

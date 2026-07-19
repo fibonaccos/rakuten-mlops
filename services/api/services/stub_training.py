@@ -21,9 +21,30 @@ from typing import Any
 from services.api.services.training import BaseTrainingService, TrainingJob
 
 _FAKE_METRICS: dict[str, Any] = {
-    "10": {"accuracy": 0.97, "precision": 0.69, "recall": 0.26, "f1-score": 0.38, "auc": 0.96, "support": 623},
-    "40": {"accuracy": 0.98, "precision": 0.74, "recall": 0.39, "f1-score": 0.51, "auc": 0.97, "support": 502},
-    "50": {"accuracy": 0.99, "precision": 0.76, "recall": 0.60, "f1-score": 0.67, "auc": 0.98, "support": 336},
+    "10": {
+        "accuracy": 0.97,
+        "precision": 0.69,
+        "recall": 0.26,
+        "f1-score": 0.38,
+        "auc": 0.96,
+        "support": 623,
+    },
+    "40": {
+        "accuracy": 0.98,
+        "precision": 0.74,
+        "recall": 0.39,
+        "f1-score": 0.51,
+        "auc": 0.97,
+        "support": 502,
+    },
+    "50": {
+        "accuracy": 0.99,
+        "precision": 0.76,
+        "recall": 0.60,
+        "f1-score": 0.67,
+        "auc": 0.98,
+        "support": 336,
+    },
     "global": {
         "accuracy": 0.74,
         "precision_macro": 0.73,

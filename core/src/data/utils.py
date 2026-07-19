@@ -1,6 +1,6 @@
-import pandas as pd
-
 from typing import Literal
+
+import pandas as pd
 
 
 def load(filepath: str, format: Literal["csv", "parquet"]) -> pd.DataFrame:
@@ -27,7 +27,7 @@ def save(df: pd.DataFrame, filepath: str) -> None:
 
     Args:
         df (pd.DataFrame): The pd.DataFrame to save.
-        filepath (str): The file path for saving. Must end by either .csv or .parquet. 
+        filepath (str): The file path for saving. Must end by either .csv or .parquet.
 
     Returns:
         None:

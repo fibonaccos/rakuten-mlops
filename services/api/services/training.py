@@ -249,7 +249,9 @@ class TrainingService(BaseTrainingService):
 
     async def _run_training(self, job: TrainingJob) -> dict[str, Any]:
         logger.info(
-            "Job %s — launching subprocess: %s", job.job_id, self._settings.train_command
+            "Job %s — launching subprocess: %s",
+            job.job_id,
+            self._settings.train_command,
         )
         proc = await asyncio.create_subprocess_shell(
             self._settings.train_command,
@@ -269,7 +271,5 @@ class TrainingService(BaseTrainingService):
             with open(metrics_path) as f:
                 return json.load(f)
 
-        logger.warning(
-            "Job %s — metrics file not found at %s", job.job_id, metrics_path
-        )
+        logger.warning("Job %s — metrics file not found at %s", job.job_id, metrics_path)
         return {}

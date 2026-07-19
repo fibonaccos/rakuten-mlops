@@ -6,9 +6,9 @@ and error handling. The BaseTrainingService is replaced by an AsyncMock so
 tests run without any real training infrastructure or asyncio task overhead.
 """
 
-import pytest
 from unittest.mock import AsyncMock, MagicMock
 
+import pytest
 from fastapi.testclient import TestClient
 
 from services.api.main import app
@@ -17,7 +17,6 @@ from services.api.schemas.auth import User
 from services.api.schemas.training import JobStatus
 from services.api.services.auth import get_current_user
 from services.api.services.training import TrainingConflictError, TrainingJob
-
 
 # ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -108,9 +107,7 @@ def test_submit_with_run_name(client, override_trainer):
 
 def test_submit_conflict_returns_409(client, override_trainer):
     """When the service raises TrainingConflictError, return 409 Conflict."""
-    override_trainer.submit = AsyncMock(
-        side_effect=TrainingConflictError("already running")
-    )
+    override_trainer.submit = AsyncMock(side_effect=TrainingConflictError("already running"))
     resp = client.post("/train", json={})
     assert resp.status_code == 409
 

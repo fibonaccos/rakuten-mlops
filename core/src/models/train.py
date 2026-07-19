@@ -1,14 +1,13 @@
 import json
+from collections import Counter
+from pathlib import Path
+
 import keras as ks
 import numpy as np
 import pandas as pd
-
 from box import Box
-from collections import Counter
 from keras.callbacks import ModelCheckpoint
 from keras.metrics import AUC
-from keras.utils import plot_model
-from pathlib import Path
 
 from ..utils.loaders import load_params
 
@@ -27,7 +26,7 @@ def create_model(n_features: int, n_classes: int) -> ks.models.Model:
             shape.
     """
 
-    inputs = ks.layers.Input(shape=(n_features, ), name="input")
+    inputs = ks.layers.Input(shape=(n_features,), name="input")
 
     x = ks.layers.Dense(units=256, activation="relu", name="dense1")(inputs)
     x = ks.layers.Dropout(rate=0.4, name="drop1")(x)
@@ -55,10 +54,7 @@ def compute_class_weight(labels: pd.DataFrame) -> dict[str, float]:
     counts = Counter(labels.to_numpy()[:, 0])
     N = labels.shape[0]
     K = labels.nunique().values[0]
-    weights = {
-        str(cls): float(N / (K * count))
-        for cls, count in counts.items()
-    }
+    weights = {str(cls): float(N / (K * count)) for cls, count in counts.items()}
     return weights
 
 
@@ -102,22 +98,23 @@ def train_model() -> None:
         monitor="val_auc",
         save_best_only=True,
         mode="max",
-        verbose=0
+        verbose=0,
     )
 
     model.compile(
         optimizer="adam",
         loss="categorical_crossentropy",
-        metrics=[AUC(multi_label=True, name="auc"), "accuracy"]
+        metrics=[AUC(multi_label=True, name="auc"), "accuracy"],
     )
 
     history = model.fit(
-        X, y_onehot,
+        X,
+        y_onehot,
         epochs=20,
         batch_size=128,
         class_weight=class_weights,
         validation_data=(Xt, yt_onehot),
-        callbacks=[checkpoint_cb]
+        callbacks=[checkpoint_cb],
     )
 
     model.save(CORE_DIR / params.output.model)

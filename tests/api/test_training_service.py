@@ -117,7 +117,7 @@ async def test_cancel_active_job_returns_true():
 
     class _SynchronizedStub(StubTrainingService):
         async def _run_training(self, job):
-            running_event.set()        # signal: we are now inside _run_training
+            running_event.set()  # signal: we are now inside _run_training
             await asyncio.sleep(60.0)  # park here until cancelled
             return {}
 

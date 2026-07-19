@@ -1,10 +1,10 @@
-import pandas as pd
 import re
 import unicodedata
+from pathlib import Path
 
+import pandas as pd
 from box import Box
 from lxml import html
-from pathlib import Path
 
 from ..utils.loaders import load_params
 from .utils import load, save
@@ -48,13 +48,13 @@ def remove_patterns(df: pd.DataFrame, columns: list[str]) -> pd.DataFrame:
     """
 
     patterns = {
-        "URL": r'https?://\S+|www\.\S+',
-        "MAIL": r'\b[\w\.-]+@[\w\.-]+\.\w+\b',
+        "URL": r"https?://\S+|www\.\S+",
+        "MAIL": r"\b[\w\.-]+@[\w\.-]+\.\w+\b",
     }
     for col in columns:
         for name, pattern in patterns.items():
             df[col] = df[col].apply(lambda s: re.sub(pattern, name, s))
-            df[col] = df[col].apply(lambda s: re.sub(r'\s+', ' ', s).strip())
+            df[col] = df[col].apply(lambda s: re.sub(r"\s+", " ", s).strip())
     return df
 
 
@@ -75,11 +75,13 @@ def keep_characters(df: pd.DataFrame, columns: list[str]) -> pd.DataFrame:
         cleaned = []
         for char in text:
             cat = unicodedata.category(char)
-            if cat.startswith("L") \
-            or cat.startswith("N") \
-            or cat.startswith("P") \
-            or cat == "Sc" \
-            or char.isspace():
+            if (
+                cat.startswith("L")
+                or cat.startswith("N")
+                or cat.startswith("P")
+                or cat == "Sc"
+                or char.isspace()
+            ):
                 cleaned.append(char)
         text = "".join(cleaned)
         text = re.sub(r"\s+", " ", text).strip()

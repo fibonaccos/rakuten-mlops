@@ -25,10 +25,33 @@ from services.api.schemas.inference import (
 
 # 27 Rakuten product category codes — matches labels_map.json
 _KNOWN_LABELS: Final[list[str]] = [
-    "10", "40", "50", "60", "1140", "1160", "1180", "1280", "1281",
-    "1300", "1301", "1302", "1320", "1560", "1920", "1940", "2060",
-    "2220", "2280", "2403", "2462", "2522", "2582", "2583", "2585",
-    "2705", "2905",
+    "10",
+    "40",
+    "50",
+    "60",
+    "1140",
+    "1160",
+    "1180",
+    "1280",
+    "1281",
+    "1300",
+    "1301",
+    "1302",
+    "1320",
+    "1560",
+    "1920",
+    "1940",
+    "2060",
+    "2220",
+    "2280",
+    "2403",
+    "2462",
+    "2522",
+    "2582",
+    "2583",
+    "2585",
+    "2705",
+    "2905",
 ]
 
 
@@ -93,8 +116,7 @@ class StubPredictorService:
                 confidence = round(raw_scores[predicted_idx], 4)
             if options.return_distribution:
                 distribution = {
-                    lbl: round(score, 4)
-                    for lbl, score in zip(_KNOWN_LABELS, raw_scores)
+                    lbl: round(score, 4) for lbl, score in zip(_KNOWN_LABELS, raw_scores)
                 }
 
         return BasePredictionOutput(
@@ -137,6 +159,6 @@ def _softmax_noise(rng: random.Random, n: int) -> list[float]:
         list[float]: Probabilities that sum to 1.0.
     """
     logits = [rng.gauss(0, 1) for _ in range(n)]
-    exp_logits = [2.718 ** x for x in logits]
+    exp_logits = [2.718**x for x in logits]
     total = sum(exp_logits)
     return [e / total for e in exp_logits]

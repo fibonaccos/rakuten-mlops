@@ -23,12 +23,12 @@ import logging
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 
-from services.api.services.auth import get_current_user
 from services.api.schemas.training import (
     TrainJobListResponse,
     TrainJobRequest,
     TrainJobStatus,
 )
+from services.api.services.auth import get_current_user
 from services.api.services.training import BaseTrainingService, TrainingConflictError
 
 logger = logging.getLogger(__name__)

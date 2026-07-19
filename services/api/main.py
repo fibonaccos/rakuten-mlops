@@ -59,8 +59,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
     if settings.stub_mode:
         logger.warning(
-            "STUB_MODE is enabled — returning random predictions. "
-            "Do NOT use in production."
+            "STUB_MODE is enabled — returning random predictions. Do NOT use in production."
         )
         predictor: PredictorService | StubPredictorService = StubPredictorService()
         predictor.load_artifacts()
@@ -93,6 +92,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         active._task.cancel()
         try:
             import asyncio as _asyncio
+
             await _asyncio.wait_for(active._task, timeout=5.0)
         except (Exception,):
             pass
