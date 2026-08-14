@@ -1,0 +1,2 @@
+apache-airflow-providers-http==5.0.0
+mlflow==3.7.0
