@@ -109,7 +109,7 @@ def horizontal_bar(
             text=texts,
             textposition="outside",
             textfont=dict(color=theme.INK_SECONDARY, size=12),
-            hovertemplate="<b>%{y}</b><br>%{x:" + value_format.lstrip(".") + "}<extra></extra>",
+            hovertemplate="<b>%{y}</b><br>%{x:" + value_format + "}<extra></extra>",
         )
     )
     fig.update_yaxes(autorange="reversed", showgrid=False)
@@ -160,7 +160,7 @@ def vertical_bar(
             text=[f"{value:{value_format}}" for value in data[value_column]],
             textposition="outside",
             textfont=dict(color=theme.INK_SECONDARY, size=12),
-            hovertemplate="<b>%{x}</b><br>%{y:" + value_format.lstrip(".") + "}<extra></extra>",
+            hovertemplate="<b>%{x}</b><br>%{y:" + value_format + "}<extra></extra>",
         )
     )
     return _style(fig, height)

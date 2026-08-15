@@ -237,8 +237,7 @@ def main() -> None:
         json.dumps(
             {
                 "source": (
-                    "produits du jeu de test du modèle "
-                    "(core/data/features/x_test.parquet)"
+                    "produits du jeu de test du modèle (core/data/features/x_test.parquet)"
                 ),
                 "products": products,
             },

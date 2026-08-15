@@ -128,13 +128,19 @@ def _render_single_result(payload: dict[str, Any], truth: str | None) -> None:
         )
     with right:
         st.markdown("**Lecture**")
-        first, second = top.iloc[0], top.iloc[1]
-        gap = first["probabilite"] - second["probabilite"]
-        st.markdown(
-            f"Le modèle place `{first['code']}` en tête avec "
-            f"**{first['probabilite']:.1%}**, devant `{second['code']}` "
-            f"({second['probabilite']:.1%}) — un écart de {gap:.1%}."
-        )
+        first = top.iloc[0]
+        second = top.iloc[1] if len(top) > 1 else None
+        gap = float(first["probabilite"] - second["probabilite"]) if second is not None else 1.0
+        if second is not None:
+            st.markdown(
+                f"Le modèle place `{first['code']}` en tête avec "
+                f"**{first['probabilite']:.1%}**, devant `{second['code']}` "
+                f"({second['probabilite']:.1%}) — un écart de {gap:.1%}."
+            )
+        else:
+            st.markdown(
+                f"Le modèle place `{first['code']}` en tête avec **{first['probabilite']:.1%}**."
+            )
         if truth and truth != label:
             rank = frame.index[frame["code"] == truth]
             if len(rank):

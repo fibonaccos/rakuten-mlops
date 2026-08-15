@@ -132,7 +132,7 @@ def _tab_categories(frame: pd.DataFrame) -> None:
     with right:
         st.markdown("**Titres réels tirés du catalogue**")
         for example in evidence.examples:
-            st.markdown(f'<div class="step">{example}</div>', unsafe_allow_html=True)
+            layout.card(example)
             st.write("")
 
 

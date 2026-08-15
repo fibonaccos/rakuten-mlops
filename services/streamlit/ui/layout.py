@@ -8,6 +8,7 @@ rather than six notebooks.
 
 from __future__ import annotations
 
+import html
 from dataclasses import dataclass
 
 import streamlit as st
@@ -144,7 +145,8 @@ def steps(items: list[tuple[str, str]]) -> None:
     Render a row of small cards describing a pipeline stage.
 
     Args:
-        items: Pairs of ``(title, description)``.
+        items: Pairs of ``(title, description)``. Both are authored in the code,
+            so they may contain inline markup.
     """
     columns = st.columns(len(items))
     for column, (title, description) in zip(columns, items):
@@ -153,6 +155,20 @@ def steps(items: list[tuple[str, str]]) -> None:
                 f'<div class="step"><b>{title}</b>{description}</div>',
                 unsafe_allow_html=True,
             )
+
+
+def card(text: str) -> None:
+    """
+    Render one small card holding text that does not come from the code.
+
+    Product titles, service messages and anything else read from a file or a
+    remote service go through here: the content is escaped, so a stray ``&``
+    or ``<`` in a catalogue entry cannot break the page or inject markup.
+
+    Args:
+        text: Untrusted text to display.
+    """
+    st.markdown(f'<div class="step">{html.escape(text)}</div>', unsafe_allow_html=True)
 
 
 def pill_html(label: str, up: bool, detail: str = "") -> str:
@@ -169,11 +185,12 @@ def pill_html(label: str, up: bool, detail: str = "") -> str:
     """
     color = theme.STATUS["good"] if up else theme.STATUS["critical"]
     mark = "●" if up else "○"
-    suffix = f'<span class="detail">{detail}</span>' if detail else ""
+    # The detail can come from a remote health payload, so it is escaped.
+    suffix = f'<span class="detail">{html.escape(detail)}</span>' if detail else ""
     return (
-        f'<span class="pill" title="{label}">'
+        f'<span class="pill" title="{html.escape(label)}">'
         f'<span class="dot" style="background:{color}"></span>'
-        f"{mark} {label} {suffix}</span>"
+        f"{mark} {html.escape(label)} {suffix}</span>"
     )
 
 
