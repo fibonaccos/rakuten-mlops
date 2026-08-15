@@ -31,6 +31,7 @@ import json
 import re
 import unicodedata
 from collections import Counter
+from html import unescape
 from pathlib import Path
 
 import pandas as pd
@@ -77,19 +78,27 @@ def tokenize(text: str) -> list[str]:
     ]
 
 
-def clean_designation(text: object) -> str:
+def clean_text(text: object) -> str:
     """
-    Undo the HTML entities and stray whitespace left in the raw designations.
+    Strip the markup the raw catalogue carries, as the pipeline does.
+
+    Roughly a third of the descriptions are raw HTML fragments
+    (``<p>…</p><br/>``) and entities are left encoded (``&#34;``). The training
+    pipeline removes them in ``core/src/data/clean_data.py`` via
+    ``lxml.html.text_content()``; this mirrors that step without pulling lxml
+    into the script, so the demo sends the model the kind of text it was
+    trained on rather than a soup of tags.
 
     Args:
         text: Raw value read from the CSV.
 
     Returns:
-        str: Display-ready designation.
+        str: Display-ready text, empty for missing values.
     """
-    value = str(text)
-    for entity, char in (("&#34;", '"'), ("&quot;", '"'), ("&amp;", "&"), ("&#39;", "'")):
-        value = value.replace(entity, char)
+    if not isinstance(text, str):
+        return ""
+    value = re.sub(r"<[^>]+>", " ", text)
+    value = unescape(value)
     return re.sub(r"\s+", " ", value).strip()
 
 
@@ -181,13 +190,10 @@ def build_demo_products(frame: pd.DataFrame, categories: dict[str, dict]) -> lis
         if subset.empty:
             continue
         row = subset.sample(1, random_state=17).iloc[0]
-        description = row["description"]
         products.append(
             {
                 "designation": row["designation"],
-                "description": clean_designation(description)
-                if isinstance(description, str)
-                else "",
+                "description": clean_text(row["description"]),
                 "true_code": code,
                 "productid": int(row["productid"]),
             }
@@ -211,7 +217,7 @@ def main() -> None:
 
     frame = designations.join(labels)
     frame["prdtypecode"] = frame["prdtypecode"].astype(str)
-    frame["designation"] = frame["designation"].map(clean_designation)
+    frame["designation"] = frame["designation"].map(clean_text)
 
     categories = build_categories(frame)
     ASSETS_DIR.mkdir(parents=True, exist_ok=True)

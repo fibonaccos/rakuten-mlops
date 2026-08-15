@@ -9,6 +9,8 @@ rather than six notebooks.
 from __future__ import annotations
 
 import html
+import re
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 
 import streamlit as st
@@ -93,6 +95,27 @@ def inject_css() -> None:
     )
 
 
+def inline(text: str) -> str:
+    """
+    Render the inline Markdown these custom components accept.
+
+    The tiles, headers and notes are built as raw HTML, so Streamlit never
+    parses their Markdown — ``**gras**`` and ``` `code` ``` would otherwise be
+    printed with their delimiters, which is exactly what happened on the
+    landing page. The text is escaped first, so only these two constructs get
+    through.
+
+    Args:
+        text: Author-written text with optional ``**bold**`` and `` `code` ``.
+
+    Returns:
+        str: HTML fragment safe to interpolate.
+    """
+    escaped = html.escape(text)
+    escaped = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", escaped, flags=re.DOTALL)
+    return re.sub(r"`([^`]+?)`", r"<code>\1</code>", escaped, flags=re.DOTALL)
+
+
 def page_header(icon: str, title: str, subtitle: str) -> None:
     """
     Render the title block of a page.
@@ -105,8 +128,8 @@ def page_header(icon: str, title: str, subtitle: str) -> None:
     st.markdown(
         f"""
         <div class="page-header">
-            <div class="title">{icon} {title}</div>
-            <div class="subtitle">{subtitle}</div>
+            <div class="title">{icon} {inline(title)}</div>
+            <div class="subtitle">{inline(subtitle)}</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -126,9 +149,9 @@ def tiles(items: list[tuple[str, str, str]]) -> None:
             st.markdown(
                 f"""
                 <div class="tile">
-                    <div class="label">{label}</div>
-                    <div class="value">{value}</div>
-                    <div class="hint">{hint}</div>
+                    <div class="label">{inline(label)}</div>
+                    <div class="value">{inline(value)}</div>
+                    <div class="hint">{inline(hint)}</div>
                 </div>
                 """,
                 unsafe_allow_html=True,
@@ -137,7 +160,7 @@ def tiles(items: list[tuple[str, str, str]]) -> None:
 
 def note(text: str) -> None:
     """Render a discreet explanatory note."""
-    st.markdown(f'<div class="note">{text}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="note">{inline(text)}</div>', unsafe_allow_html=True)
 
 
 def steps(items: list[tuple[str, str]]) -> None:
@@ -152,9 +175,23 @@ def steps(items: list[tuple[str, str]]) -> None:
     for column, (title, description) in zip(columns, items):
         with column:
             st.markdown(
-                f'<div class="step"><b>{title}</b>{description}</div>',
+                f'<div class="step"><b>{inline(title)}</b>{inline(description)}</div>',
                 unsafe_allow_html=True,
             )
+
+
+def step_card(title: str, description: str) -> None:
+    """
+    Render a single titled card, outside of the ``steps`` row layout.
+
+    Args:
+        title: Card heading.
+        description: Body text, with the same inline Markdown as ``steps``.
+    """
+    st.markdown(
+        f'<div class="step"><b>{inline(title)}</b>{inline(description)}</div>',
+        unsafe_allow_html=True,
+    )
 
 
 def card(text: str) -> None:
@@ -224,31 +261,39 @@ def probe_services(
     Returns:
         list[ServiceStatus]: One entry per service, in display order.
     """
-    api = ApiClient(api_url, timeout=state.PROBE_TIMEOUT)
-    try:
-        health = api.health()
-        model_ready, _ = api.ready()
-        api_status = ServiceStatus(
+
+    def probe_api() -> ServiceStatus:
+        api = ApiClient(api_url, timeout=state.PROBE_TIMEOUT)
+        try:
+            health = api.health()
+            model_ready, _ = api.ready()
+        except ApiError:
+            return ServiceStatus(name="API", up=False, detail="injoignable")
+        state_text = "prêt" if model_ready else "absent"
+        return ServiceStatus(
             name="API",
             up=True,
-            detail=f"v{health.get('version', '?')} · modèle {'prêt' if model_ready else 'absent'}",
+            detail=f"v{health.get('version', '?')} · modèle {state_text}",
         )
-    except ApiError:
-        api_status = ServiceStatus(name="API", up=False, detail="injoignable")
 
-    mlflow_up = MlflowClient(mlflow_url, timeout=state.PROBE_TIMEOUT).is_up()
-    airflow_up = AirflowClient(
-        airflow_url,
-        airflow_user,
-        airflow_password,
-        timeout=state.PROBE_TIMEOUT,
-    ).is_up()
+    def probe_mlflow() -> ServiceStatus:
+        up = MlflowClient(mlflow_url, timeout=state.PROBE_TIMEOUT).is_up()
+        return ServiceStatus("MLflow", up, "tracking" if up else "injoignable")
 
-    return [
-        api_status,
-        ServiceStatus("MLflow", mlflow_up, "tracking" if mlflow_up else "injoignable"),
-        ServiceStatus("Airflow", airflow_up, "scheduler" if airflow_up else "injoignable"),
-    ]
+    def probe_airflow() -> ServiceStatus:
+        up = AirflowClient(
+            airflow_url,
+            airflow_user,
+            airflow_password,
+            timeout=state.PROBE_TIMEOUT,
+        ).is_up()
+        return ServiceStatus("Airflow", up, "scheduler" if up else "injoignable")
+
+    # Probed in parallel: run sequentially, three unreachable services cost the
+    # sum of their timeouts before a single pixel of the page is drawn.
+    with ThreadPoolExecutor(max_workers=3) as pool:
+        futures = [pool.submit(probe) for probe in (probe_api, probe_mlflow, probe_airflow)]
+        return [future.result() for future in futures]
 
 
 def current_statuses() -> list[ServiceStatus]:

@@ -40,6 +40,54 @@ def test_untrusted_text_is_escaped_in_cards() -> None:
     assert "<script>" not in body
 
 
+def test_inline_markdown_is_rendered_in_custom_components() -> None:
+    """
+    Tiles, headers and notes are raw HTML, so their Markdown must be expanded.
+
+    Without this, the landing page printed "codes `prdtypecode`" with its
+    backticks visible.
+    """
+    rendered = layout.inline("codes `prdtypecode` et **gras**")
+
+    assert "<code>prdtypecode</code>" in rendered
+    assert "<strong>gras</strong>" in rendered
+    assert "`" not in rendered
+    assert "**" not in rendered
+
+
+def test_inline_markdown_still_escapes_html() -> None:
+    """Expanding Markdown must not open a hole for tags."""
+    rendered = layout.inline("<img src=x onerror=alert(1)> & `ok`")
+
+    assert "&lt;img" in rendered
+    assert "&amp;" in rendered
+    assert "<img" not in rendered
+
+
+def test_thousands_are_separated_the_french_way() -> None:
+    """A French interface never prints "10,209"."""
+    frame = pd.DataFrame({"libelle": ["a"], "produits": [10209]})
+
+    figure = charts.horizontal_bar(
+        frame, label_column="libelle", value_column="produits", value_format=",.0f"
+    )
+
+    assert figure.data[0].text[0] == "10\u202f209"  # narrow no-break space
+    assert figure.layout.separators == ".\u202f"
+
+
+def test_reference_annotation_has_room_to_breathe() -> None:
+    """The macro-average caption sits above the plot and was being clipped."""
+    frame = pd.DataFrame({"libelle": ["a", "b"], "f1": [0.9, 0.5]})
+
+    plain = charts.horizontal_bar(frame, label_column="libelle", value_column="f1")
+    with_reference = charts.horizontal_bar(
+        frame, label_column="libelle", value_column="f1", reference=0.71
+    )
+
+    assert with_reference.layout.margin.t > plain.layout.margin.t
+
+
 def test_status_pills_escape_remote_details() -> None:
     """Health payloads come from other services and are escaped as well."""
     markup = layout.pill_html("API <b>", True, "v1 & ready")

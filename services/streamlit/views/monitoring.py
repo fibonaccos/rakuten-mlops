@@ -166,7 +166,7 @@ def render() -> None:
     st.divider()
     st.subheader("Supervision : où nous en sommes")
     for title, description in ROADMAP:
-        st.markdown(f'<div class="step"><b>{title}</b>{description}</div>', unsafe_allow_html=True)
+        layout.step_card(title, description)
         st.write("")
 
     layout.note(

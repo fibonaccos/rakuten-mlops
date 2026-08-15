@@ -24,9 +24,12 @@ class UISettings(BaseSettings):
     )
 
     # -- Upstream services -----------------------------------------------------
-    api_url: str = "http://localhost:8000"
-    mlflow_url: str = "http://localhost:5000"
-    airflow_url: str = "http://localhost:8080"
+    # 127.0.0.1 rather than localhost: on Windows the name resolves to ::1 first,
+    # and every call pays a failed IPv6 attempt before falling back to IPv4 —
+    # around two seconds per request, which is unusable for the status probes.
+    api_url: str = "http://127.0.0.1:8000"
+    mlflow_url: str = "http://127.0.0.1:5000"
+    airflow_url: str = "http://127.0.0.1:8080"
 
     # -- Credentials used to pre-fill the login forms --------------------------
     # Convenience for local demos only; nothing is stored or sent automatically.

@@ -29,8 +29,10 @@ from services.streamlit.views import (  # noqa: E402
     predict,
 )
 
+# The first entry is the default page: Streamlit always serves it at "/" and
+# ignores any url_path given for it, so it is declared without one.
 PAGES = [
-    (overview.render, "Vue d'ensemble", "🏠", "vue-ensemble"),
+    (overview.render, "Vue d'ensemble", "🏠", ""),
     (data.render, "Données & features", "🗂️", "donnees"),
     (predict.render, "Prédiction", "🎯", "prediction"),
     (performance.render, "Performance", "📊", "performance"),
@@ -53,7 +55,9 @@ def main() -> None:
 
     navigation = st.navigation(
         [
-            st.Page(render, title=title, icon=icon, url_path=url_path, default=index == 0)
+            st.Page(render, title=title, icon=icon, default=index == 0)
+            if index == 0
+            else st.Page(render, title=title, icon=icon, url_path=url_path)
             for index, (render, title, icon, url_path) in enumerate(PAGES)
         ]
     )

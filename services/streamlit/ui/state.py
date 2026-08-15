@@ -23,8 +23,9 @@ from services.streamlit.settings import UISettings, get_ui_settings
 CALL_LOG_SIZE = 300
 
 # Short timeout used by the sidebar status probes, so a service that is down
-# never freezes the interface.
-PROBE_TIMEOUT = 3.0
+# never freezes the interface. Kept low on purpose: these probes run on every
+# cold render, and the sidebar is drawn before the page content.
+PROBE_TIMEOUT = 1.5
 
 
 def init_state() -> None:

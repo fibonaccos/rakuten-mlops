@@ -15,6 +15,18 @@ import plotly.graph_objects as go
 
 from services.streamlit.ui import theme
 
+# French typography for large numbers: a narrow no-break space, never a comma.
+NARROW_NBSP = "\u202f"
+
+# Plotly reads this as (decimal, thousands). The decimal point is kept so the
+# ".2f" formats used for scores stay readable.
+FRENCH_SEPARATORS = f".{NARROW_NBSP}"
+
+
+def _localise(text: str) -> str:
+    """Replace the English thousands comma with a narrow no-break space."""
+    return text.replace(",", NARROW_NBSP)
+
 
 def _style(fig: go.Figure, height: int, *, show_legend: bool = False) -> go.Figure:
     """
@@ -30,6 +42,7 @@ def _style(fig: go.Figure, height: int, *, show_legend: bool = False) -> go.Figu
     """
     fig.update_layout(
         height=height,
+        separators=FRENCH_SEPARATORS,
         margin=dict(l=8, r=16, t=8, b=8),
         paper_bgcolor=theme.SURFACE,
         plot_bgcolor=theme.SURFACE,
@@ -98,7 +111,7 @@ def horizontal_bar(
     """
     labels = data[label_column].tolist()
     values = data[value_column].tolist()
-    texts = [f"{value:{value_format}}{value_suffix}" for value in values]
+    texts = [_localise(f"{value:{value_format}}{value_suffix}") for value in values]
 
     fig = go.Figure(
         go.Bar(
@@ -121,12 +134,19 @@ def horizontal_bar(
             line_width=1,
             line_dash="dash",
             line_color=theme.INK_MUTED,
-            annotation_text=f"{reference_label} {reference:{value_format}}{value_suffix}",
+            annotation_text=_localise(
+                f"{reference_label} {reference:{value_format}}{value_suffix}"
+            ),
             annotation_position="top",
             annotation_font=dict(color=theme.INK_MUTED, size=11),
         )
 
-    return _style(fig, height)
+    styled = _style(fig, height)
+    if reference is not None:
+        # The annotation sits above the plotting area and is clipped by the
+        # default 8px top margin.
+        styled.update_layout(margin_t=26)
+    return styled
 
 
 def vertical_bar(
@@ -157,7 +177,7 @@ def vertical_bar(
             x=data[label_column].tolist(),
             y=data[value_column].tolist(),
             marker=dict(color=color or theme.SERIES_BLUE, cornerradius=4),
-            text=[f"{value:{value_format}}" for value in data[value_column]],
+            text=[_localise(f"{value:{value_format}}") for value in data[value_column]],
             textposition="outside",
             textfont=dict(color=theme.INK_SECONDARY, size=12),
             hovertemplate="<b>%{x}</b><br>%{y:" + value_format + "}<extra></extra>",

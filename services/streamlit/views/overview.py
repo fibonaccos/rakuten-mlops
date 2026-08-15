@@ -168,10 +168,7 @@ def render() -> None:
     columns = st.columns(3)
     for index, (title, description) in enumerate(WALKTHROUGH):
         with columns[index % 3]:
-            st.markdown(
-                f'<div class="step"><b>{title}</b>{description}</div>',
-                unsafe_allow_html=True,
-            )
+            layout.step_card(title, description)
         if index % 3 == 2:
             st.write("")
 
