@@ -1,0 +1,22 @@
+# Front-end configuration read by `streamlit run services/streamlit/app.py`.
+# The theme is pinned to light: the chart palette was validated for contrast and
+# colour-blind separation against a white surface.
+
+[theme]
+base = "light"
+primaryColor = "#bf0000"
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#f9f9f7"
+textColor = "#0b0b0b"
+font = "sans serif"
+
+[server]
+headless = true
+fileWatcherType = "auto"
+
+[browser]
+gatherUsageStats = false
+
+[client]
+toolbarMode = "minimal"
+showErrorDetails = true
