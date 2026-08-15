@@ -8,6 +8,7 @@ from __future__ import annotations
 import streamlit as st
 
 from services.streamlit.domain.artifacts import load_metrics
+from services.streamlit.domain.catalog import load_catalogue
 from services.streamlit.ui import layout, state, theme
 
 ARCHITECTURE_DOT = """
@@ -42,10 +43,30 @@ digraph stack {
 """
 
 SERVICES = [
-    ("`api`", "FastAPI", "8000", "Authentification JWT, inférence unitaire et par lot, jobs d'entraînement"),
-    ("`mlflow`", "MLflow", "5000", "Suivi des runs : paramètres, métriques, artefacts, commit Git"),
-    ("`airflow-webserver`", "Airflow", "8080", "Orchestration du pipeline de données et de réentraînement"),
-    ("`streamlit`", "Streamlit", "8501", "Interface de démonstration et de pilotage (cette application)"),
+    (
+        "`api`",
+        "FastAPI",
+        "8000",
+        "Authentification JWT, inférence unitaire et par lot, jobs d'entraînement",
+    ),
+    (
+        "`mlflow`",
+        "MLflow",
+        "5000",
+        "Suivi des runs : paramètres, métriques, artefacts, commit Git",
+    ),
+    (
+        "`airflow-webserver`",
+        "Airflow",
+        "8080",
+        "Orchestration du pipeline de données et de réentraînement",
+    ),
+    (
+        "`streamlit`",
+        "Streamlit",
+        "8501",
+        "Interface de démonstration et de pilotage (cette application)",
+    ),
 ]
 
 WALKTHROUGH = [
@@ -54,7 +75,7 @@ WALKTHROUGH = [
     ("3 · Prédiction", "La démonstration : un produit, un lot, le contrat d'API."),
     ("4 · Performance", "Ce que vaut le modèle, catégorie par catégorie."),
     ("5 · MLOps", "Airflow, MLflow, réentraînement piloté, CI/CD."),
-    ("6 · Santé", "Disponibilité, temps de réponse, suite du chantier monitoring."),
+    ("6 · Monitoring", "Disponibilité, temps de réponse, suite du chantier supervision."),
 ]
 
 
@@ -68,15 +89,17 @@ def render() -> None:
         "service, supervision — est automatisée et reproductible.",
     )
 
-    report = load_metrics(state.settings().artifacts_path)
+    settings = state.settings()
+    report = load_metrics(settings.artifacts_path)
+    catalogue = load_catalogue(settings.assets_path)
 
     layout.tiles(
         [
             ("Catégories", "27", "codes `prdtypecode`"),
             (
                 "Produits",
-                f"≈ {report.dataset_size:,}".replace(",", " ") if report.dataset_size else "—",
-                "déduit du jeu de test et du split 80/20",
+                f"{catalogue.total_products:,}".replace(",", " ") if catalogue.available else "—",
+                "fiches du catalogue étiquetées",
             ),
             ("Features", "396 → 120", "statistiques + embeddings, réduits par PCA"),
             (

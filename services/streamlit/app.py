@@ -35,7 +35,7 @@ PAGES = [
     (predict.render, "Prédiction", "🎯", "prediction"),
     (performance.render, "Performance", "📊", "performance"),
     (mlops.render, "MLOps", "⚙️", "mlops"),
-    (monitoring.render, "Santé", "🩺", "sante"),
+    (monitoring.render, "Monitoring", "🩺", "monitoring"),
 ]
 
 

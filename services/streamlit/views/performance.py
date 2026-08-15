@@ -133,8 +133,9 @@ def _tab_confusion() -> None:
     st.markdown(
         "Chaque ligne est la vraie catégorie, chaque colonne la catégorie prédite. "
         "La diagonale porte les bonnes réponses ; les taches hors diagonale sont les "
-        "confusions récurrentes — le plus souvent entre catégories voisines "
-        "(livres neufs et livres d'occasion, jeux neufs et jeux d'occasion)."
+        "confusions récurrentes — le plus souvent entre catégories voisines : les quatre "
+        "familles de livres (10, 2280, 2403, 2705), le mobilier d'intérieur et de jardin "
+        "(1560, 2582), ou les jeux vidéo neufs et d'occasion (40, 2462)."
     )
     st.image(str(path), width="stretch")
     st.caption("Image produite par `core/src/models/evaluate.py`.")
@@ -225,7 +226,12 @@ def render() -> None:
 
     st.write("")
     tab_class, tab_learning, tab_confusion, tab_reading = st.tabs(
-        ["Par catégorie", "Courbes d'apprentissage", "Matrice de confusion", "Lecture des résultats"]
+        [
+            "Par catégorie",
+            "Courbes d'apprentissage",
+            "Matrice de confusion",
+            "Lecture des résultats",
+        ]
     )
 
     with tab_class:

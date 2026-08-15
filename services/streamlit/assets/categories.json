@@ -1,0 +1,538 @@
+{
+  "source": "X_train_update.csv + Y_train_CVw08PX.csv (challenge Rakuten France Multimodal)",
+  "total_products": 84916,
+  "without_description": 29800,
+  "categories": {
+    "2583": {
+      "count": 10209,
+      "share": 0.1202,
+      "description_filled": 0.912,
+      "terms": [
+        "sunbay",
+        "hayward",
+        "chlore",
+        "gre",
+        "mono",
+        "filtration",
+        "tubulaire",
+        "piscine"
+      ],
+      "examples": [
+        "Tuyau flottant 2 manchons soudés diam 38 mm Long 1500 m",
+        "Linxor - Bâche à Bulle 300 microns Piscine 4m x 12m",
+        "Pompe à chaleur piscine 50 à 60m3 ECO PAC 11 CFacil'eau"
+      ]
+    },
+    "1560": {
+      "count": 5073,
+      "share": 0.0597,
+      "description_filled": 0.965,
+      "terms": [
+        "lattex",
+        "essenzia",
+        "sommier",
+        "poli",
+        "chene",
+        "supplies",
+        "ferme",
+        "meuble"
+      ],
+      "examples": [
+        "Pouf Coffre En Microfibre Coloris Gris Bali",
+        "100 Pcs Organdi Qualité Sacs Mariage Bijoux Faveur Pochette 5x7cm Cadeau",
+        "Console 120cm En Bois Avec Tiroirs"
+      ]
+    },
+    "1300": {
+      "count": 5045,
+      "share": 0.0594,
+      "description_filled": 0.767,
+      "terms": [
+        "ceeport",
+        "scy",
+        "generique",
+        "maquette",
+        "loamdake",
+        "gimbal",
+        "mavic",
+        "drone"
+      ],
+      "examples": [
+        "2pc For Dji Phantom 4 Pro Drone Rc Landing Gear With Antenna&compass Parts-Générique",
+        "Drone Dji Mavic Air Fly More Combo Blanc Arctique-Dji",
+        "Ford Aa Platform Truck Rouge 1928 1/43 Whitebox-Whitebox"
+      ]
+    },
+    "2060": {
+      "count": 4993,
+      "share": 0.0588,
+      "description_filled": 0.943,
+      "terms": [
+        "pasted",
+        "lujuik",
+        "strass",
+        "peintures",
+        "muraux",
+        "broderie",
+        "horloge",
+        "lumieres"
+      ],
+      "examples": [
+        "Grand Bas De Noël Sock Père Noël Bonbons Sac Cadeau Arbre De Noël Hanging Décor",
+        "Gelco Patere 3 Tetes Clipper Blanc",
+        "Suspension Noire Madame 1 Ampoule"
+      ]
+    },
+    "2522": {
+      "count": 4989,
+      "share": 0.0588,
+      "description_filled": 0.762,
+      "terms": [
+        "lindner",
+        "clairefontaine",
+        "pte",
+        "exacompta",
+        "carnet",
+        "encre",
+        "stylos",
+        "calcul"
+      ],
+      "examples": [
+        "Tipp-Ex Lot De 5 Rollers De Correction Micro Tape Twist 5 Mmx 8 M",
+        "Bic 4 Couleurs Grip Stylo-Bille Noir + Bleu + Rouge + Vert",
+        "Diddl: Lot Sac Et Coffret Papier"
+      ]
+    },
+    "1280": {
+      "count": 4870,
+      "share": 0.0574,
+      "description_filled": 0.781,
+      "terms": [
+        "doudou",
+        "doll",
+        "puzzle",
+        "poupee",
+        "education",
+        "ours",
+        "peluche",
+        "helicoptere"
+      ],
+      "examples": [
+        "Doudou Plat Ours Vert Pommette",
+        "Squishable Narwhal Plush - 15 Inch",
+        "Skate À Doigts Quickos De Chez Quick"
+      ]
+    },
+    "2403": {
+      "count": 4774,
+      "share": 0.0562,
+      "description_filled": 0.026,
+      "terms": [
+        "partitions",
+        "tomes",
+        "livres",
+        "numeros",
+        "volumes",
+        "revues",
+        "romans",
+        "editions"
+      ],
+      "examples": [
+        "Raymonde Fraisse 2 Facicules Musique Choregraphie Texte --- La Danse Des Ballons",
+        "Collection Complete 20 Volumes Les Rebelles",
+        "13 Livres Bibliothéque Du Temps Présent"
+      ]
+    },
+    "2280": {
+      "count": 4760,
+      "share": 0.0561,
+      "description_filled": 0.067,
+      "terms": [
+        "illustre",
+        "magazine",
+        "presse",
+        "revue",
+        "france",
+        "jean",
+        "monde",
+        "paris"
+      ],
+      "examples": [
+        "La Discotheque Du 20e Siecle 1985 Les 15 Tubes De L'année 1985",
+        "National Geographic N° 211 : Defending A Forgotten Herd",
+        "Arts De La Chine-Arts Du Japon Ceramiques-Jades-Okimonos Ivoire-Estampes¿.."
+      ]
+    },
+    "1920": {
+      "count": 4303,
+      "share": 0.0507,
+      "description_filled": 0.952,
+      "terms": [
+        "zjj",
+        "cdaffaires",
+        "kap",
+        "taies",
+        "taie",
+        "sassy",
+        "pillow",
+        "throw"
+      ],
+      "examples": [
+        "Father's Day Linen Pillowcase Comfortable Sofa Cushion Set Home Decoration Kap5853",
+        "Nappe Imperméable En Pvc Transparent 140x250cm",
+        "Football Impression Oreiller Entoilées Coussin Sofa Home Décor Taie"
+      ]
+    },
+    "1160": {
+      "count": 3953,
+      "share": 0.0466,
+      "description_filled": 0.088,
+      "terms": [
+        "mtg",
+        "adrenalyn",
+        "reverse",
+        "attax",
+        "holo",
+        "commune",
+        "foil",
+        "pokemon"
+      ],
+      "examples": [
+        "Magirêve Niv 33 80pv Holo 7/100 Diamant Et Perle Tempête",
+        "Pokémon - 101-R/131 - Bruyverne - Reverse",
+        "Carte Pokémon 101/165 Mélofée 50 Pv Expédition"
+      ]
+    },
+    "1320": {
+      "count": 3241,
+      "share": 0.0382,
+      "description_filled": 0.66,
+      "terms": [
+        "messenger",
+        "langer",
+        "damaier",
+        "poussette",
+        "bavoir",
+        "hochet",
+        "bandouliere",
+        "humidificateur"
+      ],
+      "examples": [
+        "198 Couches Pampers Premium Care Pants Taille 4",
+        "Echarpe Portage Couleur Pure Multi-Fonction 530*58 Cm - Rouge",
+        "Nouvelle Version Pack Nouveau Né Yoyo 0m+ Rouge Babyzen"
+      ]
+    },
+    "10": {
+      "count": 3116,
+      "share": 0.0367,
+      "description_filled": 0.108,
+      "terms": [
+        "guide",
+        "tome",
+        "histoire",
+        "edition"
+      ],
+      "examples": [
+        "Bug Club Non-Fiction Turquoise A/1a Welcome To The Circus 6-Pack",
+        "Histoire Du Vol À Voile [ Edition Originale ]",
+        "Maastricht Le Non De Tous Les Miens"
+      ]
+    },
+    "2705": {
+      "count": 2761,
+      "share": 0.0325,
+      "description_filled": 0.629,
+      "terms": [
+        "tome",
+        "vie",
+        "histoire"
+      ],
+      "examples": [
+        "La Guerre Des Lulus (Tome 5) - 1918 Le Der Des Ders",
+        "Alice Au Pays Des Morts-Vivants - Tome 2 : De L'autre Côté Du Mouroir",
+        "El Secreto Para Multiplicar Tus Ingresos"
+      ]
+    },
+    "1140": {
+      "count": 2671,
+      "share": 0.0315,
+      "description_filled": 0.354,
+      "terms": [
+        "funko",
+        "gundam",
+        "ver",
+        "statuette",
+        "mug",
+        "shirt",
+        "figurine",
+        "pop"
+      ],
+      "examples": [
+        "Figurine Pop - Marvel Ant-Man & The Wasp - Janet Van Dyne - Funko Pop",
+        "1/100 Gundam Decal Zeon Ms Gundam",
+        "Figurine Wow Wee - Wrex Le Chien Robot - Happy Meal - Mcdo 2008"
+      ]
+    },
+    "2582": {
+      "count": 2589,
+      "share": 0.0305,
+      "description_filled": 0.976,
+      "terms": [
+        "hangar",
+        "stainless",
+        "auvent",
+        "parasol",
+        "tressee",
+        "cutting",
+        "abri",
+        "pliante"
+      ],
+      "examples": [
+        "Parasol Décentré Janeiro Émeraude Rond 3 M Hespéride",
+        "Pircher Table De Jardin Soho 150x90 Cm En Aluminium Peint Anthracite Et Bois De Teck",
+        "Ecus Kids- Matelas Bébé O Xsi Hr 137x67x12cm - Le Matelas Anti-Asphyxie. Double Face."
+      ]
+    },
+    "40": {
+      "count": 2508,
+      "share": 0.0295,
+      "description_filled": 0.345,
+      "terms": [
+        "jap",
+        "allemand",
+        "japonais",
+        "import",
+        "japon",
+        "anglais",
+        "version",
+        "complet"
+      ],
+      "examples": [
+        "Legacy Of Kain : Soul Reaver (100% Malin)",
+        "Pack Feu Obscur Fortnite (Code De Téléchargement - Ne Contient Pas De Carte De Jeu)",
+        "Coffret : Vins 2000 + 2000 Recettes"
+      ]
+    },
+    "2585": {
+      "count": 2496,
+      "share": 0.0294,
+      "description_filled": 0.921,
+      "terms": [
+        "vhbw",
+        "tronconneuse",
+        "tondeuse",
+        "arrosage",
+        "gazon",
+        "tools",
+        "usages",
+        "aspirateur"
+      ],
+      "examples": [
+        "Fer à souder avec Tip Cleaner fil de laiton éponge Sans eau nécessaire",
+        "Pelle St Etienne CDC 27 emmanchée",
+        "Ultrasons insectes Repeller chasse-moustiques Repeller fourmis mouches"
+      ]
+    },
+    "1302": {
+      "count": 2491,
+      "share": 0.0293,
+      "description_filled": 0.889,
+      "terms": [
+        "minnow",
+        "hardbass",
+        "appats",
+        "stream",
+        "leurres",
+        "trampoline",
+        "appat",
+        "leurre"
+      ],
+      "examples": [
+        "Pistolet À Eau Avec Pompe 44 Cm",
+        "Big It Up Make Snappy Happy Entrez Dans Le Jeu !",
+        "10cm Pommes Frites Crème Parfumées Squeeze 6seconde Lente Rising Jouet"
+      ]
+    },
+    "1281": {
+      "count": 2070,
+      "share": 0.0244,
+      "description_filled": 0.762,
+      "terms": [
+        "board",
+        "societe",
+        "games",
+        "educatifs",
+        "putty",
+        "game",
+        "boue",
+        "card"
+      ],
+      "examples": [
+        "Valeria: Card Kingdoms By Daily Magic Games",
+        "Malette Poker James Bond Casino Royal Collector",
+        "Location De Basket-Ball Pool Party Piscine Jardin Grand Ballon De Plage Gonflable Toy"
+      ]
+    },
+    "50": {
+      "count": 1681,
+      "share": 0.0198,
+      "description_filled": 0.717,
+      "terms": [
+        "filaire",
+        "tenales",
+        "gaming",
+        "skin",
+        "joy",
+        "switch",
+        "con",
+        "gamepad"
+      ],
+      "examples": [
+        "Figurine Disney Infinity 2.0 - Marvel Super Heroes : Ronan",
+        "Pour La Console De Jeu De Xbox One Autocollants De Décalque De Vinyle Ach-387010",
+        "Qaixag Sans Fil Bluetooth Sport St¿¿R¿¿O ¿¿Couteur Casque Casque Rd"
+      ]
+    },
+    "2462": {
+      "count": 1421,
+      "share": 0.0167,
+      "description_filled": 0.037,
+      "terms": [
+        "jaquette",
+        "voir",
+        "kinect",
+        "manettes",
+        "photos",
+        "wii",
+        "element",
+        "fifa"
+      ],
+      "examples": [
+        "Wii + Balance + 5 Jeux + Accessoires",
+        "Lot - The Settlers - Sur Nintendo Ds + 1 Jeu Pc Neuf (Voir Photos)",
+        "Steelbook Welcome To Suplex City"
+      ]
+    },
+    "2905": {
+      "count": 872,
+      "share": 0.0103,
+      "description_filled": 1.0,
+      "terms": [
+        "dlc",
+        "telechargement",
+        "extension",
+        "simulator",
+        "collector",
+        "jeu",
+        "mac",
+        "deluxe"
+      ],
+      "examples": [
+        "Borderlands 2 Season Pass (Extension) - Jeu En Téléchargement",
+        "Classic Naval Combat Pack - Jeu En Téléchargement",
+        "Hotel Dash: Suite Success - Jeu En Téléchargement"
+      ]
+    },
+    "60": {
+      "count": 832,
+      "share": 0.0098,
+      "description_filled": 0.84,
+      "terms": [
+        "coolbaby",
+        "bits",
+        "tft",
+        "construit",
+        "integres",
+        "lecteur",
+        "ldk",
+        "consoles"
+      ],
+      "examples": [
+        "Ps4 1 To + Star Wars Battlefront - Ultimate Player 1tb Edition",
+        "Console Ps Vita Modèle Pch-1004",
+        "2135549 Wii Mario Party 9 Selects"
+      ]
+    },
+    "2220": {
+      "count": 824,
+      "share": 0.0097,
+      "description_filled": 0.92,
+      "terms": [
+        "chiot",
+        "laisse",
+        "puppy",
+        "gilet",
+        "pet",
+        "chiens",
+        "chien",
+        "dog"
+      ],
+      "examples": [
+        "Julius K9 Harnais Power 0ml : 5876 Cm - 40 Mm - Indigo - Pour Chien",
+        "Mode Chien Chat Villosités Vêtements Chauds Chiot Chien Vêtements Vêtementsdzv4779",
+        "Harnais Ezydog Quick Fit M Bleu 55-68cm 25mm"
+      ]
+    },
+    "1301": {
+      "count": 807,
+      "share": 0.0095,
+      "description_filled": 0.87,
+      "terms": [
+        "flechette",
+        "aramith",
+        "ailettes",
+        "collants",
+        "bce",
+        "auucne",
+        "ailette",
+        "slipper"
+      ],
+      "examples": [
+        "Procédés push on (3) 11 mm-Bce",
+        "3 fléchettes nylon\"Nemesis\" - 16g-K-Harrows",
+        "Balles Baby Foot Blanches (3)-Suprême"
+      ]
+    },
+    "1940": {
+      "count": 803,
+      "share": 0.0095,
+      "description_filled": 0.944,
+      "terms": [
+        "tassimo",
+        "dosettes",
+        "nescafe",
+        "gusto",
+        "haribo",
+        "gluten",
+        "espresso",
+        "bur"
+      ],
+      "examples": [
+        "Dragées Blanches Lérida Finesse Extrême 1kg Médicis",
+        "Mr.Freeze Standard \"Classic\" 50ml",
+        "Muscade - Moulue - Sac De Kraft De 370 Gr - Maison De Qualite - 7 Saisons"
+      ]
+    },
+    "1180": {
+      "count": 764,
+      "share": 0.009,
+      "description_filled": 0.2,
+      "terms": [
+        "donjons",
+        "oop",
+        "partha",
+        "ral",
+        "august",
+        "heroclix",
+        "warhammer",
+        "roles"
+      ],
+      "examples": [
+        "Rackham Confrontation Musicien De Dirz",
+        "Elfe Sylvestre Sylvain Métal Sda Hobbit Modèle 4",
+        "Circuit À Billes « Ultrarapide »"
+      ]
+    }
+  }
+}

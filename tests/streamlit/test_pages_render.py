@@ -45,7 +45,9 @@ def test_page_renders_without_exception(module: str) -> None:
 
 def test_entrypoint_runs() -> None:
     """The entrypoint builds its navigation and renders the default page."""
-    app = AppTest.from_file(str(PROJECT_ROOT / "services" / "streamlit" / "app.py"), default_timeout=90)
+    app = AppTest.from_file(
+        str(PROJECT_ROOT / "services" / "streamlit" / "app.py"), default_timeout=90
+    )
     app.run()
     assert not app.exception, [str(exc.value) for exc in app.exception]
 
@@ -56,7 +58,5 @@ def test_pages_warn_when_services_are_down() -> None:
     situation rather than fail silently.
     """
     app = _run("mlops")
-    messages = [element.value for element in app.warning] + [
-        element.value for element in app.info
-    ]
+    messages = [element.value for element in app.warning] + [element.value for element in app.info]
     assert any("Airflow" in message for message in messages)

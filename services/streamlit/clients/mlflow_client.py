@@ -140,7 +140,9 @@ class MlflowClient:
                     metrics={
                         m["key"]: float(m["value"]) for m in data.get("metrics", []) if "key" in m
                     },
-                    params={p["key"]: str(p["value"]) for p in data.get("params", []) if "key" in p},
+                    params={
+                        p["key"]: str(p["value"]) for p in data.get("params", []) if "key" in p
+                    },
                     tags=tags,
                 )
             )

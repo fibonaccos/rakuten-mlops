@@ -9,7 +9,7 @@ import pandas as pd
 import streamlit as st
 
 from services.streamlit.clients.api_client import ApiError
-from services.streamlit.domain.samples import SAMPLES
+from services.streamlit.domain.catalog import load_demo_products
 from services.streamlit.ui import charts, layout, state, theme
 
 BENCHMARK_CALLS = 10
@@ -56,23 +56,26 @@ def _summary_tiles(frame: pd.DataFrame) -> None:
 def _benchmark() -> None:
     """Run a small burst of calls to populate the latency chart."""
     client = state.api_client()
+    products = load_demo_products(state.settings().assets_path)
     progress = st.progress(0.0, text="Mesure en cours…")
     failures = 0
 
     for index in range(BENCHMARK_CALLS):
         try:
-            if state.is_authenticated() and index % 2 == 1:
-                sample = SAMPLES[index % len(SAMPLES)]
+            if state.is_authenticated() and products and index % 2 == 1:
+                product = products[index % len(products)]
                 client.predict(
-                    sample["designation"],
-                    sample["description"],
+                    product.designation,
+                    product.description,
                     with_distribution=False,
                 )
             else:
                 client.health()
         except ApiError:
             failures += 1
-        progress.progress((index + 1) / BENCHMARK_CALLS, text=f"Appel {index + 1}/{BENCHMARK_CALLS}")
+        progress.progress(
+            (index + 1) / BENCHMARK_CALLS, text=f"Appel {index + 1}/{BENCHMARK_CALLS}"
+        )
 
     progress.empty()
     if failures:
@@ -85,7 +88,7 @@ def render() -> None:
     """Render the monitoring page."""
     layout.page_header(
         "🩺",
-        "Santé de l'application",
+        "Monitoring de l'application",
         "Disponibilité des services et temps de réponse réels, mesurés depuis ce client. "
         "Les mesures portent sur la session en cours : c'est une observation de bout en "
         "bout, pas un remplacement de la supervision serveur.",
@@ -99,7 +102,7 @@ def render() -> None:
                 f'<div class="tile"><div class="label">{status.name}</div>'
                 f'<div class="value" style="font-size:1.15rem;color:'
                 f'{theme.STATUS["good"] if status.up else theme.STATUS["critical"]}">'
-                f'{"disponible" if status.up else "indisponible"}</div>'
+                f"{'disponible' if status.up else 'indisponible'}</div>"
                 f'<div class="hint">{status.detail}</div></div>',
                 unsafe_allow_html=True,
             )
@@ -146,9 +149,7 @@ def render() -> None:
                     "p95_ms": "p95 (ms)",
                     "max_ms": "max (ms)",
                 }
-            ).style.format(
-                {"médiane (ms)": "{:.0f}", "p95 (ms)": "{:.0f}", "max (ms)": "{:.0f}"}
-            ),
+            ).style.format({"médiane (ms)": "{:.0f}", "p95 (ms)": "{:.0f}", "max (ms)": "{:.0f}"}),
             hide_index=True,
             width="stretch",
         )

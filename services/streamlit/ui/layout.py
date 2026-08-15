@@ -300,7 +300,9 @@ def sidebar() -> None:
 
         with st.expander("Points d'accès", expanded=False):
             st.session_state["api_url"] = st.text_input("API", st.session_state["api_url"])
-            st.session_state["mlflow_url"] = st.text_input("MLflow", st.session_state["mlflow_url"])
+            st.session_state["mlflow_url"] = st.text_input(
+                "MLflow", st.session_state["mlflow_url"]
+            )
             st.session_state["airflow_url"] = st.text_input(
                 "Airflow", st.session_state["airflow_url"]
             )

@@ -61,11 +61,26 @@ daltonismes.
 services/streamlit/
 ├── app.py                  # Point d'entrée : navigation et assemblage des pages
 ├── settings.py             # Configuration UI_* (pydantic-settings)
+├── assets/                 # Extraits du catalogue brut (voir plus bas)
 ├── clients/                # Accès HTTP : API, MLflow, Airflow
-├── domain/                 # Artefacts, libellés de catégories, produits d'exemple
+├── domain/                 # Artefacts, catalogue, libellés de catégories
 ├── ui/                     # Thème, graphiques, mise en page, état de session
 └── views/                  # Une page = un module exposant render()
 ```
+
+## Données de référence
+
+Les fichiers du challenge Rakuten sont trop volumineux pour être versionnés. Deux
+extraits sont donc embarqués dans `assets/` et régénérables :
+
+```bash
+uv run python scripts/build_ui_assets.py --raw-dir <dossier des CSV Rakuten>
+```
+
+- `categories.json` — pour chaque `prdtypecode` : nombre réel de produits, part du
+  corpus, taux de descriptions remplies, termes caractéristiques et vrais titres.
+- `demo_products.json` — un produit réel par catégorie, pris dans le jeu de test du
+  modèle, avec sa vraie catégorie : la démonstration est donc vérifiable.
 
 Chaque page est un module autonome : ajouter une page revient à écrire un
 `render()` et à l'inscrire dans `PAGES` (`app.py`).
@@ -73,11 +88,11 @@ Chaque page est un module autonome : ajouter une page revient à écrire un
 ## Les six pages
 
 1. **Vue d'ensemble** — problème métier, architecture, état des services.
-2. **Données & features** — jeu de données, déséquilibre, chaîne de features.
-3. **Prédiction** — démonstration unitaire, par lot, et contrat d'API.
+2. **Données & features** — catalogue réel, déséquilibre, contenu de chaque code, chaîne de features.
+3. **Prédiction** — démonstration unitaire vérifiable, par lot, et contrat d'API.
 4. **Performance** — métriques globales et par catégorie, courbes, confusion.
 5. **MLOps** — Airflow, MLflow, réentraînement piloté, CI/CD.
-6. **Santé** — disponibilité, temps de réponse mesurés, feuille de route Grafana.
+6. **Monitoring** — disponibilité, temps de réponse mesurés, feuille de route Grafana.
 
 ## Tests
 
@@ -95,5 +110,6 @@ démonstration.
   obtenu en HTTP, comme n'importe quel client.
 - **Aucune page ne casse quand un service est éteint.** Elle explique ce qui
   manque et comment le démarrer.
-- **Rien n'est recalculé.** Les métriques viennent de `metrics.json`, les runs
-  de MLflow, les états de DAG d'Airflow.
+- **Rien n'est recalculé, rien n'est inventé.** Les métriques viennent de
+  `metrics.json`, les runs de MLflow, les états de DAG d'Airflow, et les chiffres
+  du catalogue des extraits versionnés dans `assets/`.

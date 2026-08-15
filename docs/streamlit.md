@@ -17,8 +17,9 @@ Un point de conception est structurant : **l'interface n'importe jamais le code 
 services/streamlit/
 ├── app.py                  # Point d'entrée : navigation, assemblage
 ├── settings.py             # Configuration UI_* (pydantic-settings)
+├── assets/                 # categories.json, demo_products.json (extraits du dataset)
 ├── clients/                # api_client.py, mlflow_client.py, airflow_client.py
-├── domain/                 # artifacts.py, labels.py, samples.py
+├── domain/                 # artifacts.py, catalog.py, labels.py
 ├── ui/                     # theme.py, charts.py, layout.py, state.py
 └── views/                  # une page = un module exposant render()
 ```
@@ -54,12 +55,40 @@ L'interface affiche alors un bandeau explicite : le contrat HTTP est réel, les 
 
 | Page | Ce qu'elle montre | Ce qu'elle lit |
 | --- | --- | --- |
-| Vue d'ensemble | Problème métier, architecture, état des services | `metrics.json`, sondes `/health` et `/ready` |
-| Données & features | Répartition des 27 catégories, déséquilibre, chaîne de features | `metrics.json`, `class_weights.json`, `params.yaml` |
-| Prédiction | Démonstration unitaire, traitement par lot, contrat d'API | `POST /predict`, `POST /predict/batch`, `/openapi.json` |
+| Vue d'ensemble | Problème métier, architecture, état des services | `categories.json`, `metrics.json`, sondes `/health` et `/ready` |
+| Données & features | Répartition réelle des 27 catégories, ce que contient chacune, chaîne de features | `categories.json`, `class_weights.json`, `params.yaml`, `metadata.json` |
+| Prédiction | Démonstration unitaire, traitement par lot, contrat d'API | `demo_products.json`, `POST /predict`, `POST /predict/batch`, `/openapi.json` |
 | Performance | Métriques globales et par classe, courbes, matrice de confusion | `metrics.json`, `history.json`, `confusion_matrix.png` |
 | MLOps | DAG Airflow, runs MLflow, réentraînement, CI/CD | API REST Airflow et MLflow, `POST /train` |
-| Santé | Disponibilité, temps de réponse, feuille de route supervision | Mesures client, sondes `/health` |
+| Monitoring | Disponibilité, temps de réponse, feuille de route supervision | Mesures client, sondes `/health` |
+
+## D'où viennent les chiffres
+
+Aucune donnée n'est inventée ni codée en dur dans les pages. Les valeurs affichées ont trois origines :
+
+1. **Les artefacts du pipeline** — `core/artifacts/` (`metrics.json`, `history.json`, `class_weights.json`, `labels_map.json`, `confusion_matrix.png`) et `core/data/features/metadata.json` pour la variance conservée par la PCA.
+2. **Les services, en direct** — prédictions, jobs d'entraînement, runs MLflow, DAG Airflow, temps de réponse.
+3. **Deux extraits du catalogue brut**, versionnés dans `services/streamlit/assets/`.
+
+Les fichiers du challenge sont trop volumineux pour être versionnés (60 Mo de CSV, 2,4 Go d'images). Le front-end embarque donc deux extraits, régénérables :
+
+```bash
+uv run python scripts/build_ui_assets.py --raw-dir <dossier des CSV Rakuten>
+```
+
+`categories.json` contient, pour chacun des 27 codes : le nombre réel de produits, sa part du corpus, le taux de descriptions réellement remplies, les termes nettement sur-représentés par rapport au reste du catalogue, et trois vrais titres de fiches.
+
+`demo_products.json` contient un produit réel par catégorie, **restreint au jeu de test du modèle** (`core/data/features/x_test.parquet`) : aucun n'a été vu à l'entraînement, et chacun porte son vrai `prdtypecode`. C'est ce qui permet à la démonstration d'afficher « prédit 2583 / réel 2583 » plutôt que de demander au jury de faire confiance.
+
+### Le cas des libellés de catégories
+
+Rakuten n'a jamais publié la signification de ses codes : le jeu de données ne contient que des nombres. Les libellés utilisés dans l'application ont donc été établis en lisant le catalogue, et l'onglet « Les 27 catégories » affiche à côté de chaque nom les termes et les titres qui le justifient — le jury peut vérifier plutôt que croire.
+
+Quelques lectures que les données tranchent, et qu'on aurait mal devinées :
+
+- `1160` est dominé par `pokemon`, `mtg`, `panini`, `foil`, `rare` : ce sont des **cartes à collectionner**, malgré une numérotation qui pourrait faire penser à des livres ;
+- `2905` a 100 % de descriptions remplies autour de `dlc`, `telechargement`, `extension` : des **jeux dématérialisés** ;
+- `1301` mélange fléchettes (`flechette`, `ailettes`, `harrows`), billard (`aramith`, `bce`) et baby-foot, d'où un libellé volontairement large.
 
 ## Authentification
 
@@ -88,8 +117,6 @@ Trois règles suivies partout, parce qu'elles évitent les graphiques trompeurs 
 - **Une couleur = une entité, jamais un rang.** Filtrer par famille de produits ne repeint pas les barres restantes.
 - **Palette validée, pas choisie à l'œil.** Les trois couleurs de séries passent les seuils de séparation pour les daltonismes (deutéranopie, tritanopie) et de contraste sur fond blanc. Le thème est verrouillé en clair pour cette raison — un basculement automatique en sombre invaliderait la validation.
 
-Les libellés de catégories (`domain/labels.py`) sont une lecture métier faite par l'équipe : Rakuten ne publie que les codes numériques. C'est écrit à l'écran, sous le graphique de répartition.
-
 ## Tests
 
 ```bash
@@ -99,7 +126,7 @@ uv run pytest tests/streamlit -v
 Trois familles :
 
 - `test_api_client.py` — construction des requêtes, gestion des erreurs HTTP et réseau, enregistrement des latences ;
-- `test_domain.py` — lecture des artefacts, cohérence entre `labels_map.json` et les libellés, dégradation propre quand les fichiers manquent ;
+- `test_domain.py` — lecture des artefacts et des extraits du catalogue, cohérence entre `labels_map.json` et les libellés, vérification que les 27 produits de démonstration couvrent bien toutes les catégories, dégradation propre quand les fichiers manquent ;
 - `test_pages_render.py` — rendu des six pages via `streamlit.testing.v1.AppTest`, services éteints.
 
 Le job `test-ui` de la CI joue cette suite à chaque push, et `docker-build` construit aussi l'image `streamlit`.
@@ -111,10 +138,10 @@ L'interface est organisée pour être parcourue dans l'ordre des pages. Réparti
 | Temps | Page | Points à faire passer |
 | --- | --- | --- |
 | 0–3 min | Vue d'ensemble | Le problème métier, le schéma d'architecture, les quatre services qui tournent devant le jury |
-| 3–6 min | Données & features | Le déséquilibre des classes, la chaîne 396 → 120, l'exigence de rejouer la même chaîne en inférence |
-| 6–11 min | Prédiction | **Le moment fort** : un produit classé en direct, la lecture de la confiance, un lot de 10 produits, puis le `curl` équivalent |
+| 3–6 min | Données & features | Le déséquilibre des classes (2583 pèse 12 % à lui seul), ce que contient réellement chaque code, la chaîne 396 → 120 |
+| 6–11 min | Prédiction | **Le moment fort** : une vraie fiche du jeu de test classée en direct et confrontée à sa catégorie réelle, la lecture de la confiance, un lot de 12 produits, puis le `curl` équivalent |
 | 11–14 min | Performance | Métriques globales, les catégories qui coincent, la matrice de confusion, ce qu'on ferait ensuite |
 | 14–18 min | MLOps | Airflow, un run MLflow avec son commit Git, un entraînement déclenché depuis l'interface, la CI |
-| 18–20 min | Santé | Temps de réponse mesurés en direct, et ce qui reste à faire côté Prometheus/Grafana |
+| 18–20 min | Monitoring | Temps de réponse mesurés en direct, et ce qui reste à faire côté Prometheus/Grafana |
 
 Deux réflexes utiles le jour J : lancer le stack au moins cinq minutes avant (le premier appel à `/predict` paie le chargement du modèle de plongement), et se connecter dès l'ouverture pour ne pas buter sur l'authentification au milieu de la démonstration.

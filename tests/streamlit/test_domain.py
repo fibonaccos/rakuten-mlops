@@ -12,23 +12,72 @@ from services.streamlit.domain.artifacts import (
     load_params,
     load_pca_variance,
 )
-from services.streamlit.domain.labels import CATEGORY_NAMES, category_label, category_name
-from services.streamlit.domain.samples import SAMPLES
+from services.streamlit.domain.catalog import load_catalogue, load_demo_products
+from services.streamlit.domain.labels import (
+    CATEGORY_FAMILIES,
+    CATEGORY_NAMES,
+    category_label,
+    category_name,
+)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 ARTIFACTS = PROJECT_ROOT / "core" / "artifacts"
+ASSETS = PROJECT_ROOT / "services" / "streamlit" / "assets"
 
 
 def test_every_trained_class_has_a_readable_name() -> None:
     """The label map and the naming table describe the same 27 categories."""
     codes = set(load_labels_map(ARTIFACTS))
     assert codes == set(CATEGORY_NAMES)
+    assert codes == set(CATEGORY_FAMILIES)
 
 
-def test_sample_products_target_known_categories() -> None:
-    """Demo products point at categories the model can actually output."""
+def test_catalogue_matches_the_challenge_dataset() -> None:
+    """The shipped evidence describes the full labelled catalogue."""
+    catalogue = load_catalogue(ASSETS)
+
+    assert catalogue.available
+    assert catalogue.total_products == 84_916
+    assert set(catalogue.categories) == set(CATEGORY_NAMES)
+    assert sum(item.count for item in catalogue.categories.values()) == catalogue.total_products
+    assert 0 < catalogue.description_gap < 1
+
+
+def test_catalogue_frame_is_ordered_and_labelled() -> None:
+    """The frame feeding the charts is sorted by size and carries readable labels."""
+    frame = load_catalogue(ASSETS).frame()
+
+    assert len(frame) == 27
+    assert frame["produits"].is_monotonic_decreasing
+    assert frame.iloc[0]["code"] == "2583"
+    assert frame["libelle"].str.contains(" · ").all()
+
+
+def test_every_category_carries_its_evidence() -> None:
+    """Each category ships characteristic terms and real product titles."""
+    for evidence in load_catalogue(ASSETS).categories.values():
+        assert evidence.terms, evidence.code
+        assert evidence.examples, evidence.code
+        assert 0 <= evidence.description_filled <= 1
+
+
+def test_demo_products_are_real_and_held_out() -> None:
+    """The demo covers every category with products carrying a ground truth."""
+    products = load_demo_products(ASSETS)
     codes = set(load_labels_map(ARTIFACTS))
-    assert {sample["expected"] for sample in SAMPLES} <= codes
+
+    assert len(products) == 27
+    assert {product.true_code for product in products} == codes
+    assert all(product.designation.strip() for product in products)
+    assert all(product.productid > 0 for product in products)
+    assert all(" · " in product.true_label for product in products)
+
+
+def test_missing_assets_degrade_quietly(tmp_path: Path) -> None:
+    """A missing asset directory yields empty structures, never an exception."""
+    assert not load_catalogue(tmp_path).available
+    assert load_catalogue(tmp_path).frame().empty
+    assert load_demo_products(tmp_path) == ()
 
 
 def test_metrics_report_is_complete() -> None:
@@ -115,6 +164,20 @@ def test_category_naming() -> None:
     assert category_name("1560") == "Mobilier d'intérieur"
     assert category_label("1560").startswith("1560 · ")
     assert category_name("9999") == "Catégorie 9999"
+
+
+def test_category_names_are_backed_by_the_catalogue_evidence() -> None:
+    """
+    Spot-check the naming decisions the raw data settles.
+
+    These three codes are the ones a reader is most likely to guess wrong, so
+    they are pinned to the terms actually observed in the catalogue.
+    """
+    categories = load_catalogue(ASSETS).categories
+
+    assert "pokemon" in categories["1160"].terms  # cards, not books
+    assert "telechargement" in categories["2905"].terms  # downloads, not construction toys
+    assert "piscine" in categories["2583"].terms
 
 
 def test_labels_map_file_is_inverted_the_same_way_as_the_api(tmp_path: Path) -> None:

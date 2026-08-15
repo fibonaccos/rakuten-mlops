@@ -38,14 +38,22 @@ class UISettings(BaseSettings):
     # -- Behaviour -------------------------------------------------------------
     request_timeout: float = 30.0
     artifacts_dir: str = str(PROJECT_ROOT / "core" / "artifacts")
+    assets_dir: str = str(Path(__file__).resolve().parent / "assets")
     mlruns_dir: str = str(PROJECT_ROOT / "tracking" / "mlflow" / "mlruns")
     params_file: str = str(PROJECT_ROOT / "core" / "params.yaml")
-    features_metadata_file: str = str(PROJECT_ROOT / "core" / "data" / "features" / "metadata.json")
+    features_metadata_file: str = str(
+        PROJECT_ROOT / "core" / "data" / "features" / "metadata.json"
+    )
 
     @property
     def artifacts_path(self) -> Path:
         """Return the artifacts directory as a Path."""
         return Path(self.artifacts_dir)
+
+    @property
+    def assets_path(self) -> Path:
+        """Return the front-end reference assets directory as a Path."""
+        return Path(self.assets_dir)
 
     @property
     def mlruns_path(self) -> Path:

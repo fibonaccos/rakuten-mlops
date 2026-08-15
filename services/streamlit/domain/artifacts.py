@@ -128,7 +128,9 @@ def load_history(artifacts_dir: Path) -> pd.DataFrame:
     if not raw:
         return pd.DataFrame()
 
-    history = pd.DataFrame({key: values for key, values in raw.items() if isinstance(values, list)})
+    history = pd.DataFrame(
+        {key: values for key, values in raw.items() if isinstance(values, list)}
+    )
     if history.empty:
         return history
     history.insert(0, "epoch", range(1, len(history) + 1))
