@@ -49,10 +49,28 @@ jobs:
       - name: Run API test suite
         run: uv run pytest tests/api -v
 
+  test-ui:
+    name: Test front-end
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install dependencies (streamlit + dev groups)
+        run: uv sync --group streamlit --group dev
+
+      - name: Run front-end test suite
+        run: uv run pytest tests/streamlit -v
+
   docker-build:
     name: Docker build (${{ matrix.image }})
     runs-on: ubuntu-latest
-    needs: [lint, test-api]
+    needs: [lint, test-api, test-ui]
     strategy:
       fail-fast: false
       matrix:
@@ -63,6 +81,8 @@ jobs:
             dockerfile: infra/docker/Dockerfile.mlflow
           - image: airflow
             dockerfile: infra/docker/Dockerfile.airflow
+          - image: streamlit
+            dockerfile: infra/docker/Dockerfile.streamlit
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
