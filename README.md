@@ -9,6 +9,7 @@ The Docker stack is defined in `docker-compose.yml`.
 | Service | Role | URL |
 | --- | --- | --- |
 | `api` | FastAPI service for auth, prediction and training routes | http://localhost:8000 |
+| `streamlit` | Demo and control front-end for the whole stack | http://localhost:8501 |
 | `mlflow` | MLflow tracking server | http://localhost:5000 |
 | `airflow-webserver` | Airflow UI | http://localhost:8080 |
 | `airflow-scheduler` | Airflow scheduler | internal |
@@ -109,6 +110,7 @@ make docker-logs
 - API docs: http://localhost:8000/docs
 - MLflow UI: http://localhost:5000
 - Airflow UI: http://localhost:8080
+- Streamlit front-end: http://localhost:8501
 
 Default local Airflow credentials:
 
@@ -150,6 +152,28 @@ Restart the API:
 ```bash
 docker compose up -d --build api
 ```
+
+## Front-end
+
+The Streamlit front-end is the entry point for demos: it walks through the
+project, calls the API over HTTP and reports the state of every service.
+
+Run it inside the stack:
+
+```bash
+docker compose up -d --build streamlit
+```
+
+Or directly on the host, against a locally running API:
+
+```bash
+uv sync --group streamlit
+make ui
+```
+
+Endpoints are configurable at runtime from the sidebar, and every page keeps
+working when a service is down. See [`docs/streamlit.md`](./docs/streamlit.md)
+for the page-by-page description and the demo walkthrough.
 
 ## MLflow
 
