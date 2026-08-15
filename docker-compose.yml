@@ -65,6 +65,37 @@ services:
       start_period: 30s
     restart: unless-stopped
 
+  streamlit:
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile.streamlit
+    image: rakuten-streamlit:latest
+    container_name: rakuten-streamlit
+    env_file:
+      - path: .env
+        required: false
+    ports:
+      - "${STREAMLIT_PORT:-8501}:8501"
+    environment:
+      UI_API_URL: http://api:8000
+      UI_MLFLOW_URL: http://mlflow:5000
+      UI_AIRFLOW_URL: http://airflow-webserver:8080
+      UI_AIRFLOW_USERNAME: ${AIRFLOW_ADMIN_USERNAME:-admin}
+      UI_AIRFLOW_PASSWORD: ${AIRFLOW_ADMIN_PASSWORD:-admin}
+      UI_DEFAULT_USERNAME: ${API_ADMIN_USERNAME:-admin}
+      UI_ARTIFACTS_DIR: /app/core/artifacts
+      UI_PARAMS_FILE: /app/core/params.yaml
+      UI_MLRUNS_DIR: /app/tracking/mlflow/mlruns
+    volumes:
+      # Read-only: the front-end never writes into the pipeline artifacts.
+      - ./core/artifacts:/app/core/artifacts:ro
+    # service_started, not service_healthy: if the API fails to come up, the
+    # interface must still start and say so rather than stay invisible.
+    depends_on:
+      api:
+        condition: service_started
+    restart: unless-stopped
+
   mlflow:
     build:
       context: .

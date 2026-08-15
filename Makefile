@@ -22,7 +22,7 @@ PACKAGE	?=
 
 
 # Make targets
-KNOWN_TARGETS := setup add commit push docker-build docker-up docker-down docker-logs
+KNOWN_TARGETS := setup add commit push docker-build docker-up docker-down docker-logs ui test
 
 # Commands
 
@@ -51,7 +51,7 @@ check-precommit:
 	@printf "$(GREEN)$(BOLD)Pre-commit hooks installed.$(RESET)\n"
 
 
-.PHONY: setup add commit push docker-build docker-up docker-down docker-logs
+.PHONY: setup add commit push docker-build docker-up docker-down docker-logs ui test
 
 setup: check-branch
 	@printf "$(MAGENTA)[make] $(BLUE)Fetching 'dev' remote branch$(RESET)\n"
@@ -79,6 +79,14 @@ else
 	@uv export -qq --group $(GROUP) --no-hashes -o services/$(GROUP)/requirements.txt
 endif
 	@printf "$(MAGENTA)[make] $(GREEN)$(BOLD)Dependencies successfully added.$(RESET)\n"
+
+ui:
+	@printf "$(MAGENTA)[make] $(BLUE)Starting the Streamlit front-end on http://localhost:8501$(RESET)\n"
+	@uv run streamlit run services/streamlit/app.py
+
+test:
+	@printf "$(MAGENTA)[make] $(BLUE)Running the test suite$(RESET)\n"
+	@uv run pytest tests/
 
 docker-build:
 	@docker compose build

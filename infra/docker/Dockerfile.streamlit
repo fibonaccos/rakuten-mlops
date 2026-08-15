@@ -1,0 +1,40 @@
+# ── Stage 1: builder ───────────────────────────────────────────────────────────
+# Same two-stage layout as the API image: dependencies are installed in an
+# isolated prefix so the final image ships packages without pip caches.
+FROM python:3.12-slim AS builder
+
+WORKDIR /build
+
+# Generated from pyproject.toml — see `make add PACKAGE=<name> GROUP=streamlit`
+# or `uv export --group streamlit --no-hashes -o services/streamlit/requirements.txt`.
+COPY services/streamlit/requirements.txt requirements.txt
+
+RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
+
+
+# ── Stage 2: runner ────────────────────────────────────────────────────────────
+FROM python:3.12-slim AS runner
+
+RUN useradd --create-home appuser
+WORKDIR /app
+
+COPY --from=builder /install /usr/local
+
+# Application code and the theme configuration Streamlit reads from the CWD.
+COPY services/ ./services/
+COPY .streamlit/ ./.streamlit/
+
+# params.yaml and the evaluation artifacts are read by the data and performance
+# pages. The artifacts directory is mounted at runtime by docker-compose so a
+# retrained model shows up without rebuilding the image.
+COPY core/params.yaml ./core/params.yaml
+
+USER appuser
+
+EXPOSE 8501
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8501/_stcore/health')"
+
+ENTRYPOINT ["streamlit", "run", "services/streamlit/app.py", \
+            "--server.port=8501", "--server.address=0.0.0.0"]
