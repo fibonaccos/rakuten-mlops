@@ -2,6 +2,28 @@
 
 Local MLOps stack for the Rakuten product classification project.
 
+## Quick start
+
+Front-end only, without Docker:
+
+```bash
+uv sync --group streamlit
+make ui
+```
+
+Full stack:
+
+```bash
+cp .env.example .env
+docker compose up -d --build
+```
+
+Interface on http://localhost:8501, log in with `admin` / `changeme`.
+
+The trained model is not versioned (`.gitignore` excludes `*.keras` and
+`*.joblib`). Without it the API runs in stub mode and returns random
+predictions, which the interface states on screen. Everything else works.
+
 ## Services
 
 The Docker stack is defined in `docker-compose.yml`.
