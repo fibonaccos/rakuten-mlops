@@ -9,6 +9,9 @@ x-airflow-common: &airflow-common
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-postgres:5432/airflow
     AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW_WEBSERVER_SECRET_KEY:-dev-airflow-secret}
+    # session alone is the Airflow default and only covers the web UI. The
+    # front-end reads DAGs over the REST API, which needs basic_auth.
+    AIRFLOW__API__AUTH_BACKENDS: "airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session"
     MLFLOW_TRACKING_URI: http://mlflow:5000
     RAKUTEN_API_URL: http://api:8000
   volumes:
